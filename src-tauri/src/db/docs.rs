@@ -24,13 +24,6 @@ pub struct Location {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Transcript {
-    pub language: String,
-    pub participants: Vec<Person>,
-    pub text: Vec<Line>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct Line {
     pub start_time: f32, // start and end time
     pub end_time: f32,   // in seconds as floats
@@ -60,10 +53,11 @@ pub struct Recording {
     pub id: ObjectId,
     pub name: String,
     pub file_path: String,
+    pub participants: Vec<Person>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date_recorded: Option<Utc>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recording_location: Option<Location>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub transcript: Option<Transcript>,
+    pub transcript: Option<ObjectId>,
 }

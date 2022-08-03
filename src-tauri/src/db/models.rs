@@ -1,7 +1,6 @@
 use serde::{Serialize, Deserialize};
-use mongodb::bson::{Bson, oid::ObjectId};
-use chrono::Utc;
-use db::docs::*;
+use mongodb::bson::oid::ObjectId;
+use super::docs::*;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum StoryCard {
@@ -22,20 +21,18 @@ pub struct Plan {
 
 impl Plan {
     // TODO: Refactor these into one method
-    fn people(&self) -> Vec<Person> {
-        self.planned_recordings.iter().map(|pr| {
-            if let Some(people) = pr.people {
-                people.iter()
-            }
-        }).collect()
+    pub fn people(&self) -> Vec<Person> {
+        self.planned_recordings.iter()
+            .filter(|pr| !pr.people.is_none())
+            .flat_map(|pr| pr.people.unwrap().into_iter())
+            .collect()
     }
     
-    fn places(&self) -> Vec<Location> {
-        self.planned_recordings.iter().map(|pr| {
-            if let Some(places) = pr.places {
-                places.iter()
-            }
-        }).collect()
+    pub fn places(&self) -> Vec<Location> {
+        self.planned_recordings.iter()
+            .filter(|pr| !pr.places.is_none())
+            .flat_map(|pr| pr.places.unwrap().into_iter())
+            .collect()
     }
 }
 
@@ -54,7 +51,7 @@ pub struct Take {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Vec<Tag>,
+    pub tags: Option<Vec<Tag>>,
     pub recording: Recording,
 }
 
@@ -68,7 +65,7 @@ pub struct StoryDeck {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Vec<Tag>,
+    pub tags: Option<Vec<Tag>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

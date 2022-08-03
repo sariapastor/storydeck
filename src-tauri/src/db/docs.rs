@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
-use mongodb::bson::{Bson, oid::ObjectId};
-use chrono::Utc;
+use mongodb::bson::oid::ObjectId;
+use chrono::{serde::ts_seconds_option, DateTime, Utc};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Tag {
@@ -44,7 +44,21 @@ pub struct PlannedRecording {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Vec<Tag>,
+    pub tags: Option<Vec<Tag>>,
+}
+
+impl PlannedRecording {
+    pub fn from_name(name: &str) -> Self {
+        PlannedRecording {
+            id: ObjectId::new(),
+            name: name.to_owned(),
+            description: None,
+            people: None,
+            places: None,
+            notes: None,
+            tags: None
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -54,10 +68,24 @@ pub struct Recording {
     pub name: String,
     pub file_path: String,
     pub participants: Vec<Person>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub date_recorded: Option<Utc>,
+    #[serde(skip_serializing_if = "Option::is_none", with = "ts_seconds_option")]
+    pub date_recorded: Option<DateTime<Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recording_location: Option<Location>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub transcript: Option<ObjectId>,
+}
+
+impl Recording {
+    pub fn from_name_and_file(name: &str, file_path: String) -> Self {
+        Recording {
+            id: ObjectId::new(),
+            name: name.to_owned(),
+            file_path,
+            participants: Vec::new(),
+            date_recorded: None,
+            recording_location: None,
+            transcript: None
+        }
+    }
 }

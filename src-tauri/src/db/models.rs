@@ -62,12 +62,37 @@ pub struct StoryDeck {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub cards: Vec<ObjectId>,
+    pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<Tag>>,
+}
+
+impl StoryDeck {
+    pub fn from_name_and_cards(name: &str, cards: Vec<ObjectId>) -> Self {
+        StoryDeck {
+            id: ObjectId::new(),
+            name: name.to_owned(),
+            cards,
+            description: None,
+            notes: None,
+            tags: None
+        }
+    }
+
+    pub fn from_name(name: &str) -> Self {
+        StoryDeck {
+            id: ObjectId::new(),
+            name: name.to_owned(),
+            cards: Vec::new(),
+            description: None,
+            notes: None,
+            tags: None
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

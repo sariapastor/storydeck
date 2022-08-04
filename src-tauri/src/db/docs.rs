@@ -83,7 +83,7 @@ impl Recording {
             name: name.to_owned(),
             file_path,
             participants: Vec::new(),
-            date_recorded: None,
+            date_recorded: Some(Utc::now()),
             recording_location: None,
             transcript: None
         }

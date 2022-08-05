@@ -42,14 +42,15 @@ pub async fn create_story_card(
 }
 
 pub async fn create_story_deck(
-    db: &Database, cards: Option<Vec<ObjectId>>, name: String
+    db: &Database, name: String, //cards: Option<Vec<ObjectId>>,
 ) -> MdbResult<StoryDeck> {
     let storydecks = db.collection::<StoryDeck>("storydecks");
-    let new_deck = if let Some(card_vec) = cards {
-        StoryDeck::from_name_and_cards(&name, card_vec)
-    } else {
-        StoryDeck::from_name(&name)
-    };
+    // let new_deck = if let Some(card_vec) = cards {
+    //     StoryDeck::from_name_and_cards(&name, card_vec)
+    // } else {
+    //     StoryDeck::from_name(&name)
+    // };
+    let new_deck = StoryDeck::from_name(&name);
     let _insert = storydecks.insert_one(&new_deck, None).await?;
     Ok(new_deck)
 }

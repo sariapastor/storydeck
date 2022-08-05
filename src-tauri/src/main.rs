@@ -5,6 +5,7 @@
 
 use tokio;
 use mongodb::bson::{Document, doc, oid::ObjectId};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 pub mod db;
 // use db::models::*;
@@ -34,9 +35,9 @@ async fn create_story_card(
 
 #[tauri::command]
 async fn create_story_deck(
-  name: String, cards: Option<Vec<ObjectId>>, state: tauri::State<'_, AppState>
+  name: String, state: tauri::State<'_, AppState> // cards: Option<Vec<ObjectId>>
 ) -> Result<String, String> {
-  let db_response = db::create_story_deck(&state.db, cards, name).await;
+  let db_response = db::create_story_deck(&state.db, name).await;
   match db_response {
     Ok(new_deck) => Ok(serde_json::to_string(&new_deck).expect("failed to parse deck")),
     Err(e) => Err(format!("failed to create deck with error: {}", e))
@@ -76,6 +77,10 @@ async fn delete_record(
 
 #[tokio::main]
 async fn main() {
+
+  let add = CustomMenuItem::new("Add", "Add new..");
+  let submenu = Submenu::new("File", Menu::new().add_item(add));
+  let menu = Menu::new().add_native_item(MenuItem::Quit).add_submenu(submenu);
     
   let state = AppState {
     db: db::establish_connection().await.expect("error connecting to database"),
@@ -83,6 +88,7 @@ async fn main() {
   };
 
   tauri::Builder::default()
+    .menu(menu)
     .manage(state)
     .invoke_handler(tauri::generate_handler![
       create_story_card, create_story_deck, query_cards_and_decks, update_record, delete_record

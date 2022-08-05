@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { invoke } from "@tauri-apps/api";
+import { useEffect, useState } from "react";
+import Header from "./components/Header";
+import DecksDisplay from "./components/DecksDisplay";
+import "./App.css";
 
 function App() {
+  const [cards, setCards] = useState([]);
+  const [decks, setDecks] = useState([{ message: "Loading.." }]);
+
+  useEffect(() => {
+    invoke("query_cards_and_decks", {})
+      .then((response) => {
+        const [cardsResponse, decksResponse] = JSON.parse(response);
+        setCards(cardsResponse);
+        const processedDecks = decksResponse.map((deck) => {
+          const deckCards = cardsResponse.filter((card) =>
+            card.decks.map((oid) => oid.$oid).includes(deck._id.$oid)
+          );
+          return { ...deck, cards: deckCards };
+        });
+        setDecks(processedDecks);
+      })
+      .catch((e) => console.log(e));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header title="Story Decks" setCards={setCards} setDecks={setDecks} />
+      <main>
+        <DecksDisplay decks={decks} />
+      </main>
+    </>
   );
 }
 

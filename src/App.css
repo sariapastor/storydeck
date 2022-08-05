@@ -1,38 +1,122 @@
-.App {
-  text-align: center;
+main {
+  display: flex;
+  flex-direction: column;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.titlebar-spacer {
+  height: 45px;
+  width: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.content {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.deck-container {
+  padding: 5px 11px 11px 5px;
+  border-radius: 10px;
+  transition: 0.2s all;
+  transform: rotate(0deg);
+}
+
+.deck-container:hover {
+  box-shadow: inset 0px 0px 6px;
+}
+
+.card-element {
+  margin: 20px;
+  height: 220px;
+  width: 160px;
+  border: 1px solid black;
+  padding: 30px;
+  border-radius: 10px;
+  background: grey;
+  color: white;
+  transition: 0.2s all linear;
+  position: fixed;
+  left: 11px;
+  top: 11px;
+  z-index: -1;
+}
+
+.card-element.top {
+  box-shadow: 2px 2px grey,
+    3px 3px black,
+    5px 5px grey,
+    6px 6px black;
+  z-index: 1;
+  position:inherit;
+}
+
+.card-display {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.active-form {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,80%);
+  z-index: 10;
+}
+
+.active-form > .form-container {
+  position: fixed;
+  margin-top: -80px;
+  top: 50vh;
+  left: calc(50vw - 80px);
+  border-radius: 10px;
+  background: white;
+  padding: 20px;
+}
+
+.hidden-form {
+  display: none;
+}
+
+.close {
+  top: -30px;
+  left: -50px;
+  position: absolute;
+  padding: 10px;
+  border: none;
+  background: none;
+  font-size: 1em;
+}
+
+.titlebar {
+  height: 45px;
+  background: #db8642;
+  user-select: none;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
-.App-link {
-  color: #61dafb;
+.titlebar button {
+  position: fixed;
+  right: 5vw;
+  height: 25px;
+  background: #db8642;
+  border: 1px solid #a95410;
+  border-radius: 3px;
+  box-shadow: 0px 0px 1px 2px #cb7632;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.titlebar button:hover {
+  background: #df8a46;
+}
+
+.titlebar button:active {
+  background: #a95410;
 }

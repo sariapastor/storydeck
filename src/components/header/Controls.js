@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 
-const Controls = ({ setCards, setDecks }) => {
+const Controls = ({ setUpdating }) => {
   const createDialog = () => {
-    console.log("open dialog here");
+    // console.log("open dialog here");
+    setUpdating({ cards: true, decks: false });
   };
   return (
     <button className="header-control" onClick={createDialog}>
@@ -12,8 +13,7 @@ const Controls = ({ setCards, setDecks }) => {
 };
 
 Controls.propTypes = {
-  setCards: PropTypes.func.isRequired,
-  setDecks: PropTypes.func.isRequired,
+  setUpdating: PropTypes.func.isRequired,
 };
 
 export default Controls;

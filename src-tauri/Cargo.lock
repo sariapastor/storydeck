@@ -70,6 +70,7 @@ version = "0.1.0"
 dependencies = [
  "bson",
  "chrono",
+ "cocoa",
  "futures",
  "mongodb",
  "serde",

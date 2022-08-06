@@ -20,7 +20,14 @@ pub struct Person {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Location {
     pub name: String,
-    pub loc_data: Option<String>, //Placeholder for eventual location data type
+    pub loc_data: Option<MdbGeoData>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MdbGeoData {
+    #[serde(rename = "type")]
+    pub g_type: String,
+    pub coordinates: Vec<Vec<[f64;2]>>
 }
 
 #[derive(Serialize, Deserialize, Debug)]

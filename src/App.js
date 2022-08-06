@@ -22,21 +22,56 @@ function App() {
       .catch((e) => console.log(e));
   };
 
+  const reloadDecksAndCardsFromDB = async () => {
+    try {
+      const response = await invoke("query_cards_and_decks", {});
+      const [cardsResponse, decksResponse] = JSON.parse(response);
+      setCards(cardsResponse);
+      const processedDecks = decksResponse.map((deck) => {
+        const deckCards = cardsResponse.filter((card) =>
+          card.decks.map((oid) => oid.$oid).includes(deck._id.$oid)
+        );
+        return { ...deck, cards: deckCards };
+      });
+      setDecks(processedDecks);
+    } catch (e) {
+      return console.log(e);
+    }
+  };
+
+  const updateActive = (type, value) => {
+    switch (type) {
+      case "deck":
+        setActiveDeck(value);
+        setActiveCard({});
+        setView("single-deck");
+        break;
+      case "card":
+        setActiveCard(value);
+        setActiveDeck({});
+        setView("single-card");
+        break;
+      default:
+        setActiveCard({});
+        setActiveDeck({});
+        console.log("executing default");
+        setView("decks-overview");
+        break;
+    }
+  };
+
   useEffect(() => {
-    invoke("query_cards_and_decks", {})
-      .then((response) => {
-        const [cardsResponse, decksResponse] = JSON.parse(response);
-        setCards(cardsResponse);
-        const processedDecks = decksResponse.map((deck) => {
-          const deckCards = cardsResponse.filter((card) =>
-            card.decks.map((oid) => oid.$oid).includes(deck._id.$oid)
-          );
-          return { ...deck, cards: deckCards };
-        });
-        setDecks(processedDecks);
-      })
-      .catch((e) => console.log(e));
-  }, [cards]);
+    reloadDecksAndCardsFromDB().then(() => setView("decks-overview"));
+  }, []);
+
+  useEffect(() => {
+    reloadDecksAndCardsFromDB();
+  }, [cards, decks]);
+
+  appWindow.listen("Add", ({ event, payload }) => {
+    console.log(event, payload);
+    setUpdating([true, payload]);
+  });
 
   return (
     <>

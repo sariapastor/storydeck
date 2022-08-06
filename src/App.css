@@ -80,6 +80,14 @@ main {
   display: none;
 }
 
+.active-field {
+  display: block;
+}
+
+.hidden-field {
+  display: none;
+}
+
 .close {
   top: -30px;
   left: -50px;

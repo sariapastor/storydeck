@@ -82,10 +82,10 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
   );
 };
 
-AddNewCardForm.propTypes = {
-  addNewCard: PropTypes.func.isRequired,
-  updatingCards: PropTypes.bool.isRequired,
+AddNewResourceForm.propTypes = {
+  addMethods: PropTypes.arrayOf(PropTypes.func).isRequired,
+  updating: PropTypes.array.isRequired,
   hideForm: PropTypes.func.isRequired,
 };
 
-export default AddNewCardForm;
+export default AddNewResourceForm;

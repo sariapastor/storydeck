@@ -3,7 +3,7 @@ use mongodb::bson::{Document, doc, oid::ObjectId}; //self,
 use mongodb::{options::ClientOptions, Client, Database};
 use mongodb::error::Result as MdbResult;
 use futures::stream::TryStreamExt;
-// use chrono::Utc;
+
 
 pub mod models;
 pub mod docs;
@@ -12,8 +12,7 @@ use docs::*;
 
 pub async fn establish_connection() -> MdbResult<Database> {
     let client_options = ClientOptions::parse(
-        env::var("MONGODB_URI")
-            .expect("You must set the MONGODB_URI environment var!")
+        env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!")
     ).await?;
     // set any additional options here as needed with: client_options.key = Some(value)
     
@@ -45,11 +44,6 @@ pub async fn create_story_deck(
     db: &Database, name: String, //cards: Option<Vec<ObjectId>>,
 ) -> MdbResult<StoryDeck> {
     let storydecks = db.collection::<StoryDeck>("storydecks");
-    // let new_deck = if let Some(card_vec) = cards {
-    //     StoryDeck::from_name_and_cards(&name, card_vec)
-    // } else {
-    //     StoryDeck::from_name(&name)
-    // };
     let new_deck = StoryDeck::from_name(&name);
     let _insert = storydecks.insert_one(&new_deck, None).await?;
     Ok(new_deck)

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 const Controls = ({ setUpdating }) => {
   const createDialog = () => {
     // console.log("open dialog here");
-    setUpdating({ cards: true, decks: false });
+    setUpdating([true, "Add"]);
   };
   return (
     <button className="header-control" onClick={createDialog}>

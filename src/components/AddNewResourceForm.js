@@ -1,7 +1,8 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-const AddNewCardForm = ({ addNewCard, updatingCards, hideForm }) => {
+const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
+  const [addNewCard, addNewDeck] = addMethods;
   const [formFields, setFormFields] = useState({
     name: "",
     recordingFilePath: "",
@@ -32,7 +33,7 @@ const AddNewCardForm = ({ addNewCard, updatingCards, hideForm }) => {
   };
 
   return (
-    <section className={`${updatingCards ? "active-form" : "hidden-form"}`}>
+    <section className={`${updating[0] ? "active-form" : "hidden-form"}`}>
       <section className="form-container">
         <button className="close pointer" onClick={hideForm}>
           ✖
@@ -72,10 +73,10 @@ const AddNewCardForm = ({ addNewCard, updatingCards, hideForm }) => {
   );
 };
 
-AddNewCardForm.propTypes = {
-  addNewCard: PropTypes.func.isRequired,
-  updatingCards: PropTypes.bool.isRequired,
+AddNewResourceForm.propTypes = {
+  addMethods: PropTypes.arrayOf(PropTypes.func).isRequired,
+  updating: PropTypes.array.isRequired,
   hideForm: PropTypes.func.isRequired,
 };
 
-export default AddNewCardForm;
+export default AddNewResourceForm;

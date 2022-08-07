@@ -77,7 +77,7 @@ pub struct Recording {
 }
 
 impl Recording {
-    pub fn from_name_and_file(name: &str, file_path: String) -> Self {
+    pub fn from_name_and_path(name: &str, file_path: String) -> Self {
         Recording {
             id: ObjectId::new(),
             name: name.to_owned(),

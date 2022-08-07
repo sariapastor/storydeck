@@ -3,6 +3,7 @@ use mongodb::bson::oid::ObjectId;
 use super::docs::*;
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
 pub enum StoryCard {
     Template(Plan),
     Telling(Take)
@@ -21,21 +22,22 @@ pub struct Plan {
 
 impl Plan {
     // TODO: Refactor these into one method
-    pub fn people(&self) -> Vec<Person> {
+    pub fn people(&self) -> Vec<&Person> {
         self.planned_recordings.iter()
             .filter(|pr| !pr.people.is_none())
-            .flat_map(|pr| pr.people.unwrap().into_iter())
+            .flat_map(|pr| pr.people.as_ref().unwrap().into_iter())
             .collect()
     }
     
-    pub fn places(&self) -> Vec<Location> {
+    pub fn places(&self) -> Vec<&Location> {
         self.planned_recordings.iter()
             .filter(|pr| !pr.places.is_none())
-            .flat_map(|pr| pr.places.unwrap().into_iter())
+            .flat_map(|pr| pr.places.as_ref().unwrap().into_iter())
             .collect()
     }
 }
 
+// #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Take {
     #[serde(rename = "_id")]

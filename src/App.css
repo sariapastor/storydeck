@@ -43,10 +43,6 @@ main {
   background: var(--card-color);
   color: white;
   transition: 0.2s all linear;
-  position: fixed;
-  left: 11px;
-  top: 11px;
-  z-index: -1;
 }
 
 .card-element.top {
@@ -62,6 +58,13 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.deck-cards-layout {
+  width: 90vw;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }
 
 .active-form {

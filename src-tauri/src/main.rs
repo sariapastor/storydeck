@@ -5,7 +5,7 @@
 
 use tokio;
 use mongodb::bson::{Document, doc, oid::ObjectId};
-use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
+use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 
 // code to get native macos window controls without titlebar (from here: https://github.com/tauri-apps/tauri/issues/2663)
 use cocoa::appkit::{NSWindow, NSWindowStyleMask};
@@ -116,16 +116,18 @@ async fn delete_record(
 #[tokio::main]
 async fn main() {
 
-  let add = CustomMenuItem::new("Add", "Add new..");
-  let submenu = Submenu::new("File", Menu::new().add_item(add));
+  let add_telling = CustomMenuItem::new("Add Telling Card", "Add new recording..");
+  let add_template = CustomMenuItem::new("Add Template Card", "Add planned recording(s)..");
+  let add_deck = CustomMenuItem::new("Add Story Deck", "Add new deck grouping..");
+  let submenu = Submenu::new("File", Menu::with_items([ 
+    add_telling.into(), add_template.into(), add_deck.into() 
+  ]));
   let menu = Menu::new().add_native_item(MenuItem::Quit).add_submenu(submenu);
     
   let state = AppState {
     db: db::establish_connection().await.expect("error connecting to database"),
     default_deck: ObjectId::parse_str("62e9a151232b6ea9aab10fa4").expect("failed to parse oid"),
   };
-
-  use tauri::Manager;
 
   tauri::Builder::default()
     .setup(|app| {
@@ -134,6 +136,13 @@ async fn main() {
       Ok(())
     })
     .menu(menu)
+    .on_menu_event(move |event| {
+      match event.menu_item_id() {
+        "Add" => event.window().emit("Add", "Add").unwrap(),
+        _ => {}
+      }
+      ()
+    })
     .manage(state)
     .invoke_handler(tauri::generate_handler![
       create_story_card, create_story_deck, query_cards_and_decks, update_record, delete_record

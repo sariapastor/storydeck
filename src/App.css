@@ -1,14 +1,22 @@
-main {
+:root {
+  --titlebar-height: 45px;
+  --titlebar-color: #db8642;
+  --bg-color: #efa9a3;
+  --card-color: #aad1ab;
+}
+
+body {
+  background: var(--bg-color);
   display: flex;
   flex-direction: column;
 }
 
 .titlebar-spacer {
-  height: 45px;
+  height: var(--titlebar-height);
   width: 100%;
 }
 
-.content {
+main {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
@@ -32,7 +40,7 @@ main {
   border: 1px solid black;
   padding: 30px;
   border-radius: 10px;
-  background: grey;
+  background: var(--card-color);
   color: white;
   transition: 0.2s all linear;
   position: fixed;
@@ -42,9 +50,9 @@ main {
 }
 
 .card-element.top {
-  box-shadow: 2px 2px grey,
+  box-shadow: 2px 2px var(--card-color),
     3px 3px black,
-    5px 5px grey,
+    5px 5px var(--card-color),
     6px 6px black;
   z-index: 1;
   position:inherit;
@@ -58,11 +66,12 @@ main {
 
 .active-form {
   position: fixed;
-  top: 0px;
+  top: var(--titlebar-height);
   left: 0px;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - var(--titlebar-height));
   background: rgba(255,255,255,80%);
+  backdrop-filter: blur(2px);
   z-index: 10;
 }
 
@@ -91,8 +100,8 @@ main {
 }
 
 .titlebar {
-  height: 45px;
-  background: #db8642;
+  height: var(--titlebar-height);
+  background: var(--titlebar-color);
   user-select: none;
   display: flex;
   justify-content: center;
@@ -119,4 +128,8 @@ main {
 
 .titlebar button:active {
   background: #a95410;
+}
+
+.window-title {
+  font-family: "Arial Rounded MT Bold";
 }

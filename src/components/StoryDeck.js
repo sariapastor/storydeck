@@ -1,20 +1,16 @@
 import PropTypes from "prop-types";
-import StoryCard from "./StoryCard";
 
-const StoryDeck = ({ deck }) => {
-  const cardComponents = deck.cards.map((card, index) => (
-    <StoryCard key={index} card={card} />
-  ));
+const StoryDeck = ({ deck, updateActive }) => {
   const summary = deck.description ? deck.description : "";
+  const setToActive = () => updateActive("deck", deck);
   return (
-    <div className="deck-container">
+    <div className="deck-container" onClick={setToActive}>
       <div className="card-element top">
         <div className="card-display">
           <h3>{deck.name}</h3>
           <h4>{summary}</h4>
         </div>
       </div>
-      {cardComponents}
     </div>
   );
 };
@@ -25,7 +21,7 @@ StoryDeck.propTypes = {
       $oid: PropTypes.string,
     }).isRequired,
     name: PropTypes.string.isRequired,
-    cards: PropTypes.arrayOf(PropTypes.object).isRequired,
+    cards: PropTypes.arrayOf(PropTypes.object),
     description: PropTypes.string,
     notes: PropTypes.string,
     tags: PropTypes.arrayOf(

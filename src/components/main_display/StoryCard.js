@@ -1,22 +1,30 @@
 import PropTypes from "prop-types";
 
-const SingleCardDisplay = ({ card }) => {
+const StoryCard = ({ card, updateActive }) => {
+  const summary = card.description ? card.description : "";
+  const setToActive = () => updateActive("card", card);
   return (
-    <div className="card-expansion">
-      <section className="expanded-card-summary">
+    <div className="card-element" onClick={setToActive}>
+      <div className="card-display">
         <h3>{card.name}</h3>
-        <h4>Other info</h4>
-      </section>
+        <h4>{summary}</h4>
+      </div>
     </div>
   );
 };
 
-SingleCardDisplay.propTypes = {
+StoryCard.propTypes = {
   card: PropTypes.shape({
     _id: PropTypes.shape({
       $oid: PropTypes.string,
     }).isRequired,
     name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    decks: PropTypes.arrayOf(
+      PropTypes.shape({
+        $oid: PropTypes.string,
+      })
+    ).isRequired,
     description: PropTypes.string,
     notes: PropTypes.string,
     tags: PropTypes.arrayOf(
@@ -27,14 +35,7 @@ SingleCardDisplay.propTypes = {
         name: PropTypes.string,
       })
     ),
-    recording: PropTypes.shape({
-      _id: PropTypes.shape({
-        $oid: PropTypes.string,
-      }),
-      name: PropTypes.string,
-      filePath: PropTypes.string,
-    }),
   }).isRequired,
 };
 
-export default SingleCardDisplay;
+export default StoryCard;

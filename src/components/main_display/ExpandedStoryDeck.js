@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import StoryCard from "./StoryCard";
 
-const ExpandedStoryDeck = ({ deck }) => {
+const ExpandedStoryDeck = ({ deck, updateActive }) => {
   const cardComponents = deck.cards.map((card, index) => (
-    <StoryCard key={index} card={card} />
+    <StoryCard key={index} card={card} updateActive={updateActive} />
   ));
   return (
     <div className="deck-expansion">

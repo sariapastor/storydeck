@@ -1,26 +1,40 @@
 import PropTypes from "prop-types";
-import StoryDeck from "./StoryDeck";
-import SingleCardDisplay from "./SingleCardDisplay";
-import ExpandedStoryDeck from "./ExpandedStoryDeck";
+import StoryDeck from "./content_display/StoryDeck";
+import SingleCardDisplay from "./content_display/SingleCardDisplay";
+import ExpandedStoryDeck from "./content_display/ExpandedStoryDeck";
+import "./MainDisplay.css";
 
 const MainDisplay = ({
-  view,
-  setView,
+  currentView,
+  setViewStack,
   decks,
   cards,
-  activeDeck,
-  activeCard,
   updateActive,
 }) => {
-  switch (view) {
+  console.log("md: ", currentView);
+
+  switch (currentView.view) {
     case "loading":
+      console.log("loading");
       return <h2>Loading...</h2>;
     case "single-deck":
-      return <ExpandedStoryDeck deck={activeDeck} />;
+      return (
+        <ExpandedStoryDeck
+          deck={currentView.activeDeck}
+          updateActive={updateActive}
+        />
+      );
     case "single-card":
-      return <SingleCardDisplay card={activeCard} />;
+      console.log("single-card");
+      return (
+        <SingleCardDisplay
+          card={currentView.activeCard}
+          updateActive={updateActive}
+        />
+      );
     case "decks-overview":
     default:
+      console.log(currentView);
       return (
         <>
           {decks.map((deck, index) => (
@@ -32,12 +46,15 @@ const MainDisplay = ({
 };
 
 MainDisplay.propTypes = {
-  view: PropTypes.string.isRequired,
-  setView: PropTypes.func.isRequired,
+  currentView: PropTypes.shape({
+    view: PropTypes.string,
+    activeCard: PropTypes.object,
+    activeDeck: PropTypes.object,
+  }).isRequired,
+  setViewStack: PropTypes.func.isRequired,
   decks: PropTypes.array.isRequired,
   cards: PropTypes.array.isRequired,
-  activeDeck: PropTypes.object,
-  activeCard: PropTypes.object,
+  updateActive: PropTypes.func.isRequired,
 };
 
 export default MainDisplay;

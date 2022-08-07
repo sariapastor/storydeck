@@ -1,0 +1,44 @@
+.deck-container {
+    padding: 5px 11px 11px 5px;
+    border-radius: 10px;
+    transition: 0.2s all;
+    /* transform: rotate(0deg); */
+}
+
+.deck-container:hover {
+    box-shadow: inset 0px 0px 6px;
+}
+
+.card-element {
+    margin: 20px;
+    height: 220px;
+    width: 160px;
+    border: 1px solid black;
+    padding: 30px;
+    border-radius: 10px;
+    background: var(--card-color);
+    color: white;
+    transition: 0.2s all linear;
+}
+
+.card-element.top {
+    box-shadow: 2px 2px var(--card-color),
+        3px 3px black,
+        5px 5px var(--card-color),
+        6px 6px black;
+    z-index: 1;
+    position:inherit;
+}
+
+.card-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.deck-cards-layout {
+    width: 90vw;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+}

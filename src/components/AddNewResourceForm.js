@@ -2,11 +2,11 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
+  const [isUpdating, updateResource] = updating;
   const [addNewCard, addNewDeck] = addMethods;
   const [formFields, setFormFields] = useState({
     name: "",
     recordingFilePath: "",
-    recordingLocation: "",
   });
 
   const onNameChange = (e) => {
@@ -17,14 +17,20 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
     setFormFields({ ...formFields, recordingFilePath: e.target.value });
   };
 
-  const onLocationChange = (e) => {
-    setFormFields({ ...formFields, recordingLocation: e.target.value });
-  };
-
   const onFormSubmit = (e) => {
     e.preventDefault();
 
-    addNewCard(formFields);
+    switch (updateResource) {
+      case "Deck":
+        addNewDeck({ name: formFields.name });
+        break;
+      case "Recording":
+      case "Planned Recording":
+        addNewCard(formFields);
+        break;
+      default:
+        console.log(`resource name "${updateResource}" not recognized`);
+    }
 
     setFormFields({
       name: "",
@@ -32,23 +38,35 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
     });
   };
 
+  const cancelAdd = () => {
+    setFormFields({
+      name: "",
+      recordingFilePath: "",
+    });
+    hideForm();
+  };
+
   return (
-    <section className={`${updating[0] ? "active-form" : "hidden-form"}`}>
+    <section className={`${isUpdating ? "active-form" : "hidden-form"}`}>
       <section className="form-container">
-        <button className="close pointer" onClick={hideForm}>
+        <button className="close pointer" onClick={cancelAdd}>
           ✖
         </button>
         <form onSubmit={onFormSubmit}>
           <div>
-            <label htmlFor="cardName">Card Name:</label>
+            <label htmlFor="name">Name for new resource:</label>
             <br />
             <input
-              name="cardName"
+              name="name"
               value={formFields.name}
               onChange={onNameChange}
             />
           </div>
-          <div>
+          <div
+            className={`${
+              updateResource === "Recording" ? "active-field" : "hidden-field"
+            }`}
+          >
             <label htmlFor="filePath">Recording File Path:</label>
             <br />
             <input
@@ -57,16 +75,7 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
               onChange={onPathChange}
             />
           </div>
-          <div>
-            <label htmlFor="recordingLocation">Recording Location:</label>
-            <br />
-            <input
-              name="frecordingLocation"
-              value={formFields.recordingLocation}
-              onChange={onLocationChange}
-            />
-          </div>
-          <input type="submit" value="Add New Card" />
+          <input type="submit" value={`Add New ${updateResource}`} />
         </form>
       </section>
     </section>

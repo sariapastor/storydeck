@@ -68,12 +68,12 @@ function App() {
         break;
       case "card":
         setActiveCard(value);
-        setActiveCard({});
+        setActiveDeck({});
         setView("single-card");
         break;
       default:
         setActiveCard({});
-        setActiveCard({});
+        setActiveDeck({});
         console.log("executing default");
         setView("decks-overview");
         break;

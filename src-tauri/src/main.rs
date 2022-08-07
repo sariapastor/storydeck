@@ -116,9 +116,9 @@ async fn delete_record(
 #[tokio::main]
 async fn main() {
 
-  let add_telling = CustomMenuItem::new("Add Telling Card", "Add new recording..");
-  let add_template = CustomMenuItem::new("Add Template Card", "Add planned recording(s)..");
-  let add_deck = CustomMenuItem::new("Add Story Deck", "Add new deck grouping..");
+  let add_telling = CustomMenuItem::new("Add Telling", "Add new recording..");
+  let add_template = CustomMenuItem::new("Add Template", "Add planned recording(s)..");
+  let add_deck = CustomMenuItem::new("Add Deck", "Add new deck grouping..");
   let submenu = Submenu::new("File", Menu::with_items([ 
     add_telling.into(), add_template.into(), add_deck.into() 
   ]));
@@ -138,7 +138,9 @@ async fn main() {
     .menu(menu)
     .on_menu_event(move |event| {
       match event.menu_item_id() {
-        "Add" => event.window().emit("Add", "Add").unwrap(),
+        "Add Template" => event.window().emit("Add", "Planned Recording").unwrap(),
+        "Add Telling" => event.window().emit("Add", "Recording").unwrap(),
+        "Add Deck" => event.window().emit("Add", "Deck").unwrap(),
         _ => {}
       }
       ()

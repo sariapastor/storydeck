@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import BackButton from "./header/BackButton";
-import Controls from "./header/Controls";
+import NewButton from "./header/NewButton";
 
 const Header = ({ title, setUpdating, viewStack, setViewStack }) => {
   return (
@@ -10,7 +10,7 @@ const Header = ({ title, setUpdating, viewStack, setViewStack }) => {
         <div className="window-title">
           <h3>{title}</h3>
         </div>
-        <Controls setUpdating={setUpdating} />
+        <NewButton setUpdating={setUpdating} />
       </div>
       <div className="titlebar-spacer"></div>
     </header>

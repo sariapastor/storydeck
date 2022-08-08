@@ -26,7 +26,7 @@ main {
   padding: 5px 11px 11px 5px;
   border-radius: 10px;
   transition: 0.2s all;
-  transform: rotate(0deg);
+  /* transform: rotate(0deg); */
 }
 
 .deck-container:hover {
@@ -129,17 +129,11 @@ main {
 
 .titlebar button {
   position: fixed;
-  right: 5vw;
   height: 25px;
   background: #db8642;
   border: 1px solid #a95410;
   border-radius: 3px;
   box-shadow: 0px 0px 1px 2px #cb7632;
-}
-
-.titlebar button:first-of-type {
-  left: 10vw;
-  right: unset;
 }
 
 .titlebar button:hover {
@@ -148,6 +142,48 @@ main {
 
 .titlebar button:active {
   background: #a95410;
+}
+
+.titlebar > button {
+  left: 10vw;
+}
+
+.header-menu > button {
+  right: 5vw;
+  top: 10px;
+}
+
+ul.drop-down {
+  list-style: none;
+  background-color: var(--titlebar-color);
+  padding: 5px;
+  position: fixed;
+  right: 5vw;
+  top: 25px;
+  display: none;
+  z-index: 20;
+}
+
+.header-menu ul li {
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+.header-menu ul li:hover {
+  background: #a95410;
+}
+
+.header-menu {
+  position: fixed;
+  right: 5vw;
+  top: 10px;
+  min-height: 35px;
+  min-width: 50px;
+  /* border: 1px solid black; */
+}
+
+.header-menu:hover ul {
+  display: block;
 }
 
 .window-title {

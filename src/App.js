@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import Header from "./components/Header";
 import MainDisplay from "./components/MainDisplay";
-import AddNewResourceForm from "./components/AddNewResourceForm";
+import AddNewForm from "./components/AddNewForm";
 import "./App.css";
 
 function App() {
@@ -108,7 +108,7 @@ function App() {
         setViewStack={setViewStack}
       />
       <main>
-        <AddNewResourceForm
+        <AddNewForm
           addMethods={[addNewCard, addNewDeck]}
           hideForm={hideForm}
           updating={updating}
@@ -120,7 +120,6 @@ function App() {
           cards={cards}
           updateActive={updateActive}
         />
-        {/* <SearchResultsDisplay view={view} /> */}
       </main>
     </>
   );

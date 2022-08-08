@@ -1,5 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import "./AddNewForm.css";
 
 const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
   const [isUpdating, updateResource] = updating;

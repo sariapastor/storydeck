@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import BackButton from "./header/BackButton";
 import NewButton from "./header/NewButton";
+import "./Header.css";
 
 const Header = ({ title, setUpdating, viewStack, setViewStack }) => {
   return (

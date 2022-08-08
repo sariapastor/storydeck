@@ -1,0 +1,42 @@
+.active-form {
+    position: fixed;
+    top: var(--titlebar-height);
+    left: 0px;
+    width: 100vw;
+    height: calc(100vh - var(--titlebar-height));
+    background: rgba(255,255,255,80%);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+}
+
+.active-form > .form-container {
+    position: fixed;
+    margin-top: -80px;
+    top: 50vh;
+    left: calc(50vw - 80px);
+    border-radius: 10px;
+    background: white;
+    padding: 20px;
+}
+
+.hidden-form {
+    display: none;
+}
+
+.active-field {
+    display: block;
+}
+
+.hidden-field {
+    display: none;
+}
+
+.close {
+    top: -30px;
+    left: -50px;
+    position: absolute;
+    padding: 10px;
+    border: none;
+    background: none;
+    font-size: 1em;
+}

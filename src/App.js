@@ -10,11 +10,12 @@ function App() {
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
   const [updating, setUpdating] = useState([false, ""]);
-  const [view, setView] = useState("loading");
-  const [activeDeck, setActiveDeck] = useState({});
-  const [activeCard, setActiveCard] = useState({});
+  const [viewStack, setViewStack] = useState([
+    { view: "loading", activeDeck: {}, activeCard: {} },
+  ]);
 
   const hideForm = () => setUpdating([false, ""]);
+
   const addNewCard = ({ name, recordingFilePath }) => {
     hideForm();
     const filePath = recordingFilePath.length === 0 ? null : recordingFilePath;
@@ -23,11 +24,17 @@ function App() {
       .then((response) => {
         const newCard = JSON.parse(response);
         setCards([...cards, newCard]);
-        setActiveCard(newCard);
-        setView("single-card");
+        const newView = {
+          ...viewStack[-1],
+          view: "single-card",
+          activeCard: newCard,
+        };
+        setViewStack([...viewStack, newView]);
       })
+      .then(() => reloadDecksAndCardsFromDB())
       .catch((e) => console.log(e));
   };
+
   const addNewDeck = ({ name }) => {
     hideForm();
     console.log("invoking db function");
@@ -35,10 +42,14 @@ function App() {
       .then((response) => {
         const newDeck = JSON.parse(response);
         setDecks([...decks, newDeck]);
-        setActiveCard({});
-        setActiveDeck(newDeck);
-        setView("single-deck");
+        const newView = {
+          ...viewStack[-1],
+          view: "single-deck",
+          activeDeck: newDeck,
+        };
+        setViewStack([...viewStack, newView]);
       })
+      .then(() => reloadDecksAndCardsFromDB())
       .catch((e) => console.log(e));
   };
 
@@ -60,33 +71,28 @@ function App() {
   };
 
   const updateActive = (type, value) => {
+    const newView = { ...viewStack[-1] };
     switch (type) {
       case "deck":
-        setActiveDeck(value);
-        setActiveCard({});
-        setView("single-deck");
+        newView.view = "single-deck";
+        newView.activeDeck = value;
         break;
       case "card":
-        setActiveCard(value);
-        setActiveDeck({});
-        setView("single-card");
+        newView.view = "single-card";
+        newView.activeCard = value;
         break;
       default:
-        setActiveCard({});
-        setActiveDeck({});
         console.log("executing default");
-        setView("decks-overview");
         break;
     }
+    setViewStack([...viewStack, newView]);
   };
 
   useEffect(() => {
-    reloadDecksAndCardsFromDB().then(() => setView("decks-overview"));
+    reloadDecksAndCardsFromDB().then(() =>
+      setViewStack([{ view: "decks-overview", activeDeck: {}, activeCard: {} }])
+    );
   }, []);
-
-  useEffect(() => {
-    reloadDecksAndCardsFromDB();
-  }, [cards, decks]);
 
   appWindow.listen("Add", ({ event, payload }) => {
     console.log(event, payload);
@@ -95,7 +101,12 @@ function App() {
 
   return (
     <>
-      <Header title="Story Decks" setUpdating={setUpdating} />
+      <Header
+        title="Story Decks"
+        setUpdating={setUpdating}
+        viewStack={viewStack}
+        setViewStack={setViewStack}
+      />
       <main>
         <AddNewResourceForm
           addMethods={[addNewCard, addNewDeck]}
@@ -103,12 +114,10 @@ function App() {
           updating={updating}
         />
         <MainDisplay
-          view={view}
-          setView={setView}
+          currentView={viewStack[viewStack.length - 1]}
+          setViewStack={setViewStack}
           decks={decks}
           cards={cards}
-          activeDeck={activeDeck}
-          activeCard={activeCard}
           updateActive={updateActive}
         />
         {/* <SearchResultsDisplay view={view} /> */}

@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
 
-const StoryCard = ({ card }) => {
+const StoryCard = ({ card, updateActive }) => {
   const summary = card.description ? card.description : "";
+  const setToActive = () => updateActive("card", card);
   return (
-    <div className="card-element">
+    <div className="card-element" onClick={setToActive}>
       <div className="card-display">
         <h3>{card.name}</h3>
         <h4>{summary}</h4>

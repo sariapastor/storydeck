@@ -73,6 +73,7 @@ dependencies = [
  "cocoa",
  "futures",
  "mongodb",
+ "pv_leopard",
  "serde",
  "serde_json",
  "tauri",
@@ -1494,6 +1495,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "libloading"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efbc0f03f9a775e9f6aed295c6a1ba2253c5757a9e03d55c6caa46a681abcddd"
+dependencies = [
+ "cfg-if",
+ "winapi",
+]
+
+[[package]]
 name = "line-wrap"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2281,6 +2292,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c278e965f1d8cf32d6e0e96de3d3e79712178ae67986d9cf9151f51e95aac89b"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "pv_leopard"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fdd83b38f6356f190ca9549cca4d495b09379f0080f797fae7757bc5ce82aa0"
+dependencies = [
+ "libc",
+ "libloading",
 ]
 
 [[package]]

@@ -30,6 +30,12 @@ function App() {
           activeCard: newCard,
         };
         setViewStack([...viewStack, newView]);
+        if (filePath) {
+          invoke("create_transcript", {
+            filename: filePath,
+            cardId: newCard._id,
+          }).then((response) => console.log(response));
+        }
       })
       .then(() => reloadDecksAndCardsFromDB())
       .catch((e) => console.log(e));

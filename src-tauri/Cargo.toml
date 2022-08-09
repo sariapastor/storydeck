@@ -23,6 +23,7 @@ bson = { version = "2.0", features = [ "chrono-0_4" ] }
 tokio = "1.0"
 chrono = { version = "0.4", features = [ "serde" ] }
 futures = "0.3.21"
+pv_leopard = "*"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 cocoa = "0.24"

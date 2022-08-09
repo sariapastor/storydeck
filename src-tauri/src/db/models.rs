@@ -17,6 +17,7 @@ pub struct Plan {
     pub decks: Vec<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(rename = "plannedRecordings")]
     pub planned_recordings: Vec<PlannedRecording>,
 }
 
@@ -99,5 +100,6 @@ pub struct Transcript {
     #[serde(rename = "_id")]
     pub id: ObjectId,    
     pub language: String,
-    pub text: Vec<Line>,
+    pub text: String,
+    pub lines: Vec<Line>,
 }

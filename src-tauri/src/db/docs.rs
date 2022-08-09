@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use mongodb::bson::oid::ObjectId;
+use bson::Bson;
 use chrono::{serde::ts_seconds_option, DateTime, Utc};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -20,6 +21,7 @@ pub struct Person {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Location {
     pub name: String,
+    #[serde(rename = "locData")]
     pub loc_data: Option<MdbGeoData>,
 }
 
@@ -27,10 +29,11 @@ pub struct Location {
 pub struct MdbGeoData {
     #[serde(rename = "type")]
     pub g_type: String,
-    pub coordinates: Vec<Vec<[f64;2]>>
+    pub coordinates: Vec<Vec<Vec<Bson>>>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Line {
     pub start_time: f32, // start and end time
     pub end_time: f32,   // in seconds as floats
@@ -69,6 +72,14 @@ impl PlannedRecording {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub enum TranscriptStatus {
+    Processing,
+    Complete,
+    Error,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Recording {
     #[serde(rename = "_id")]
     pub id: ObjectId,
@@ -79,6 +90,7 @@ pub struct Recording {
     pub date_recorded: Option<DateTime<Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recording_location: Option<Location>,
+    pub transcript_status: TranscriptStatus,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub transcript: Option<ObjectId>,
 }
@@ -92,6 +104,7 @@ impl Recording {
             participants: Vec::new(),
             date_recorded: Some(Utc::now()),
             recording_location: None,
+            transcript_status: TranscriptStatus::Processing,
             transcript: None
         }
     }

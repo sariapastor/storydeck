@@ -25,15 +25,15 @@ impl Plan {
     // TODO: Refactor these into one method
     pub fn people(&self) -> Vec<&Person> {
         self.planned_recordings.iter()
-            .filter(|pr| !pr.people.is_none())
-            .flat_map(|pr| pr.people.as_ref().unwrap().into_iter())
+            .filter(|pr| pr.people.is_some())
+            .flat_map(|pr| pr.people.as_ref().unwrap().iter())
             .collect()
     }
     
     pub fn places(&self) -> Vec<&Location> {
         self.planned_recordings.iter()
-            .filter(|pr| !pr.places.is_none())
-            .flat_map(|pr| pr.places.as_ref().unwrap().into_iter())
+            .filter(|pr| pr.places.is_some())
+            .flat_map(|pr| pr.places.as_ref().unwrap().iter())
             .collect()
     }
 }
@@ -72,16 +72,6 @@ pub struct StoryDeck {
 }
 
 impl StoryDeck {
-    // pub fn from_name_and_cards(name: &str, cards: Vec<ObjectId>) -> Self {
-    //     StoryDeck {
-    //         id: ObjectId::new(),
-    //         name: name.to_owned(),
-    //         cards,
-    //         description: None,
-    //         notes: None,
-    //         tags: None
-    //     }
-    // }
 
     pub fn from_name(name: &str) -> Self {
         StoryDeck {

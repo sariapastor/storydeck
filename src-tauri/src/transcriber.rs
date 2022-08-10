@@ -1,10 +1,8 @@
-// use std::error::Error;
 use std::env;
 use leopard::{Leopard, LeopardBuilder, LeopardError, LeopardTranscript, LeopardWord};
 use crate::db::docs::Line;
 
 pub struct Config {
-    // pub key: String,
     pub language: String,
     pub filename: String,
 }
@@ -17,8 +15,6 @@ impl Config {
 
     pub fn from_cli(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
         args.next();
-
-        // let key = env::var("PV_KEY").expect("PV_KEY must be set");
 
         let language = match args.next() {
             Some(arg) => arg.to_lowercase(),
@@ -56,6 +52,10 @@ pub fn transcribe_and_split(config: Config) -> Result<(String, Vec<Line>), Strin
 }
 
 fn picovoice_transcribe(filename: &str) -> Result<LeopardTranscript, LeopardError> {
+    #[cfg(not(debug_assertions))]
+    let access_key = env!("PV_KEY", "PV_KEY must be set");
+    
+    #[cfg(debug_assertions)]
     let access_key = env::var("PV_KEY").expect("PV_KEY must be set");
 
     let leopard: Leopard = LeopardBuilder::new()
@@ -67,13 +67,13 @@ fn picovoice_transcribe(filename: &str) -> Result<LeopardTranscript, LeopardErro
 }
 
 fn convert_to_lines(transcript_words: Vec<LeopardWord>) -> Vec<Line> {
-    let mut words = transcript_words.iter().enumerate();
+    let words = transcript_words.iter().enumerate();
     let mut lines = Vec::new();
     let mut line_in_progress = Line {start_time: 0.0, end_time: 0.0, line: String::new()};
-    while let Some((i, word)) = words.next() {
+    for (i, word) in words {
         line_in_progress.end_time = word.end_sec;
         line_in_progress.line.push_str(&word.word);
-        line_in_progress.line.push_str(" ");
+        line_in_progress.line.push(' ');
         if (i+1) % 60 == 0 {
             lines.push(line_in_progress.clone());
             line_in_progress.start_time = line_in_progress.end_time;

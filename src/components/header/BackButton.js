@@ -5,7 +5,14 @@ const BackButton = ({ viewStack, setViewStack }) => {
     viewStack.pop();
     setViewStack([...viewStack]);
   };
-  return <button onClick={goBack}>⬅</button>;
+  return (
+    <button
+      className={`${viewStack.length === 1 ? "hidden" : ""}`}
+      onClick={goBack}
+    >
+      ⬅
+    </button>
+  );
 };
 
 BackButton.propTypes = {

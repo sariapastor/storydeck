@@ -4,7 +4,6 @@ use mongodb::{options::ClientOptions, Client, Database};
 use mongodb::error::Result as MdbResult;
 use futures::stream::TryStreamExt;
 
-
 pub mod models;
 pub mod docs;
 use models::*;
@@ -14,7 +13,7 @@ pub async fn establish_connection() -> MdbResult<Database> {
     let client_options = ClientOptions::parse(
         env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!")
     ).await?;
-    // set any additional options here as needed with: client_options.key = Some(value)
+     // set any additional options here as needed with: client_options.key = Some(value)
     
     let client = Client::with_options(client_options)?;
     Ok(client.database("capstone_project"))
@@ -56,7 +55,7 @@ pub async fn create_transcript(
 }
 
 pub async fn create_story_deck(
-    db: &Database, name: String, //cards: Option<Vec<ObjectId>>,
+    db: &Database, name: String,
 ) -> MdbResult<StoryDeck> {
     let storydecks = db.collection::<StoryDeck>("storydecks");
     let new_deck = StoryDeck::from_name(&name);

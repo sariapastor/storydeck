@@ -99,5 +99,6 @@ pub struct Transcript {
     #[serde(rename = "_id")]
     pub id: ObjectId,    
     pub language: String,
-    pub text: Vec<Line>,
+    pub text: String,
+    pub lines: Vec<Line>,
 }

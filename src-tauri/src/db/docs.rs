@@ -30,7 +30,7 @@ pub struct MdbGeoData {
     pub coordinates: Vec<Vec<[f64;2]>>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Line {
     pub start_time: f32, // start and end time
     pub end_time: f32,   // in seconds as floats

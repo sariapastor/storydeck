@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import StoryDeck from "./content_display/StoryDeck";
-import SingleCardDisplay from "./content_display/SingleCardDisplay";
-import ExpandedStoryDeck from "./content_display/ExpandedStoryDeck";
+import StoryDeck from "./main_display/StoryDeck";
+import SingleCardDisplay from "./main_display/SingleCardDisplay";
+import ExpandedStoryDeck from "./main_display/ExpandedStoryDeck";
 import "./MainDisplay.css";
 
 const MainDisplay = ({

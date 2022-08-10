@@ -1,10 +1,8 @@
-// use std::error::Error;
 use std::env;
 use leopard::{Leopard, LeopardBuilder, LeopardError, LeopardTranscript, LeopardWord};
 use crate::db::docs::Line;
 
 pub struct Config {
-    // pub key: String,
     pub language: String,
     pub filename: String,
 }
@@ -17,8 +15,6 @@ impl Config {
 
     pub fn from_cli(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
         args.next();
-
-        // let key = env::var("PV_KEY").expect("PV_KEY must be set");
 
         let language = match args.next() {
             Some(arg) => arg.to_lowercase(),

@@ -71,16 +71,6 @@ pub struct StoryDeck {
 }
 
 impl StoryDeck {
-    // pub fn from_name_and_cards(name: &str, cards: Vec<ObjectId>) -> Self {
-    //     StoryDeck {
-    //         id: ObjectId::new(),
-    //         name: name.to_owned(),
-    //         cards,
-    //         description: None,
-    //         notes: None,
-    //         tags: None
-    //     }
-    // }
 
     pub fn from_name(name: &str) -> Self {
         StoryDeck {

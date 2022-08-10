@@ -3,14 +3,12 @@
   windows_subsystem = "windows"
 )]
 
-pub mod db;
-pub mod transcriber;
-
-use tokio;
 use mongodb::bson::{Document, doc, oid::ObjectId};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 use db::docs::*;
 
+pub mod db;
+pub mod transcriber;
 
 // code to get native macos window controls without default titlebar 
 // (from here: https://github.com/tauri-apps/tauri/issues/2663)
@@ -164,7 +162,6 @@ async fn main() {
         "Add Deck" => event.window().emit("Add", "Deck").unwrap(),
         _ => {}
       }
-      ()
     })
     .manage(state)
     .invoke_handler(tauri::generate_handler![

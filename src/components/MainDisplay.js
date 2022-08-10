@@ -15,7 +15,6 @@ const MainDisplay = ({
 
   switch (currentView.view) {
     case "loading":
-      console.log("loading");
       return <h2>Loading...</h2>;
     case "single-deck":
       return (
@@ -25,7 +24,6 @@ const MainDisplay = ({
         />
       );
     case "single-card":
-      console.log("single-card");
       return (
         <SingleCardDisplay
           card={currentView.activeCard}

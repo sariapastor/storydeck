@@ -19,22 +19,20 @@ function App() {
   const addNewCard = ({ name, recordingFilePath }) => {
     hideForm();
     const filePath = recordingFilePath.length === 0 ? null : recordingFilePath;
-    console.log("invoking db function");
+    console.log("invoking create_story_card");
     invoke("create_story_card", { name, filePath })
       .then((response) => {
         const newCard = JSON.parse(response);
         setCards([...cards, newCard]);
-        const newView = {
-          ...viewStack[-1],
-          view: "single-card",
-          activeCard: newCard,
-        };
-        setViewStack([...viewStack, newView]);
+        updateActive("card", newCard);
         if (filePath) {
+          console.log("invoking create_transcript");
           invoke("create_transcript", {
             filename: filePath,
             cardId: newCard._id,
-          }).then((response) => console.log(response));
+          })
+            .then((response) => console.log(response))
+            .catch((e) => console.log(e));
         }
       })
       .then(() => reloadDecksAndCardsFromDB())
@@ -43,17 +41,13 @@ function App() {
 
   const addNewDeck = ({ name }) => {
     hideForm();
-    console.log("invoking db function");
+    console.log("invoking create_story_deck");
     invoke("create_story_deck", { name })
       .then((response) => {
         const newDeck = JSON.parse(response);
+        newDeck.cards = [];
         setDecks([...decks, newDeck]);
-        const newView = {
-          ...viewStack[-1],
-          view: "single-deck",
-          activeDeck: newDeck,
-        };
-        setViewStack([...viewStack, newView]);
+        updateActive("deck", newDeck);
       })
       .then(() => reloadDecksAndCardsFromDB())
       .catch((e) => console.log(e));

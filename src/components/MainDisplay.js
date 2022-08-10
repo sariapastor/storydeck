@@ -34,7 +34,6 @@ const MainDisplay = ({
       );
     case "decks-overview":
     default:
-      console.log(currentView);
       return (
         <>
           {decks.map((deck, index) => (

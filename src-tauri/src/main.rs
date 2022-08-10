@@ -3,11 +3,17 @@
   windows_subsystem = "windows"
 )]
 
+pub mod db;
+pub mod transcriber;
+
 use tokio;
 use mongodb::bson::{Document, doc, oid::ObjectId};
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
+use db::docs::*;
 
-// code to get native macos window controls without titlebar (from here: https://github.com/tauri-apps/tauri/issues/2663)
+
+// code to get native macos window controls without default titlebar 
+// (from here: https://github.com/tauri-apps/tauri/issues/2663)
 use cocoa::appkit::{NSWindow, NSWindowStyleMask};
 use tauri::{Runtime, Window};
 
@@ -44,10 +50,7 @@ impl<R: Runtime> WindowExt for Window<R> {
     }
   }
 }
-
-pub mod db;
-// use db::models::*;
-use db::docs::*;
+// end of native macos window controls code
 
 struct AppState {
   db: mongodb::Database,
@@ -58,7 +61,7 @@ struct AppState {
 async fn create_story_card(
   name: String, file_path: Option<String>, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
-  let db_response = if let Some(path) = file_path { 
+  let db_response = if let Some(path) = file_path {
     let recording = Recording::from_name_and_path(&name, path);
     db::create_story_card(&state.db, state.default_deck, name, Some(recording), None).await
   } else {
@@ -68,6 +71,23 @@ async fn create_story_card(
   match db_response {
     Ok(new_card) => Ok(serde_json::to_string(&new_card).expect("failed to parse card")),
     Err(e) => Err(format!("failed to create card with error: {}", e))
+  }
+}
+
+#[tauri::command]
+async fn create_transcript(
+  filename: String, card_id: ObjectId, state: tauri::State<'_, AppState>
+) -> Result<String, String> {
+  let config = transcriber::Config::from_filename(filename).expect("failed to make transcriber config"); 
+  if let Ok(transcript_result) = transcriber::transcribe_and_split(config) {
+      println!("transcript completed");
+      let db_response = db::create_transcript(&state.db, transcript_result, card_id).await;
+      match db_response {
+        Ok(new_transcript) => Ok(serde_json::to_string(&new_transcript).expect("failed to parse transcript")),
+        Err(e) => Err(format!("failed to create transcript with error: {}", e))
+      }
+  } else {
+    Err(String::from("failed to transcribe and split"))
   }
 }
 
@@ -127,6 +147,7 @@ async fn main() {
   let state = AppState {
     db: db::establish_connection().await.expect("error connecting to database"),
     default_deck: ObjectId::parse_str("62e9a151232b6ea9aab10fa4").expect("failed to parse oid"),
+    // TODO: implement function to initialize this default_deck value properly
   };
 
   tauri::Builder::default()
@@ -147,7 +168,7 @@ async fn main() {
     })
     .manage(state)
     .invoke_handler(tauri::generate_handler![
-      create_story_card, create_story_deck, query_cards_and_decks, update_record, delete_record
+      create_story_card, create_story_deck, query_cards_and_decks, update_record, delete_record, create_transcript
       ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

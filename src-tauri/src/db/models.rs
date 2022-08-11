@@ -17,6 +17,7 @@ pub struct Plan {
     pub decks: Vec<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(rename = "plannedRecordings")]
     pub planned_recordings: Vec<PlannedRecording>,
 }
 

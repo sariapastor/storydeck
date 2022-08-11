@@ -45,7 +45,12 @@ pub async fn create_transcript(
     let transcript_id = ObjectId::new();
     let new_transcript = Transcript { id: transcript_id, language: String::from("english"), text: transcript.0, lines: transcript.1 };
     let insert = db.collection::<Transcript>("transcripts").insert_one(&new_transcript, None).await?;
-    let _update = update_record(db, "card", card_id, doc! { "$set": { "recording.transcript": insert.inserted_id } }).await?;
+    let _update = update_record(db, "card", card_id, doc! {
+        "$set": {
+            "recording.transcript": insert.inserted_id,
+            "recording.transcriptStatus": "Complete"
+        }
+    }).await?;
     Ok(new_transcript)
 }
 
@@ -64,6 +69,13 @@ pub async fn query_cards_and_decks(
     let card_results = db.collection::<StoryCard>("storycards").find(filter.clone(), None).await?.try_collect().await?;
     let deck_results = db.collection::<StoryDeck>("storydecks").find(filter, None).await?.try_collect().await?;
     Ok((card_results, deck_results))
+}
+
+pub async fn query_transcripts(
+    db: &Database, filter: Document
+) -> MdbResult<Vec<Transcript>> {
+    let transcript_results = db.collection::<Transcript>("transcripts").find(filter, None).await?.try_collect().await?;
+    Ok(transcript_results)
 }
 
 pub async fn update_record(

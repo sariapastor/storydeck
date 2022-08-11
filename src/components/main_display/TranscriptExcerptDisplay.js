@@ -2,19 +2,27 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 
 const TranscriptExcerptDisplay = ({ transcript, mediaTime }) => {
-  // TODO: convert mediaTime (seconds float) to display format
-  // TODO: create 'excerpt' state variable to reset when mediaTime updates
-  const [excerpt, setExcerpt] = useState("");
-  const displayTime = `${Math.floor(mediaTime / 60)}:${
-    mediaTime - Math.floor(mediaTime / 60)
-  }`;
+  const [excerptIndex, setExcerptIndex] = useState(0);
+  const displayTime = `${Math.floor(mediaTime / 60)}:${mediaTime % 60}`;
+  // TODO: convert mediaTime (seconds float) to proper display format
+
   useEffect(() => {
-    setExcerpt(transcript.lines ? transcript.lines[0].line : "");
-  }, [transcript]);
+    if (
+      transcript.lines &&
+      transcript.lines[excerptIndex].endTime &&
+      transcript.lines[excerptIndex].endTime < mediaTime &&
+      excerptIndex < transcript.lines.length - 1
+    ) {
+      setExcerptIndex(
+        transcript.lines.findIndex((entry) => entry.endTime > mediaTime)
+      );
+    }
+  }, [transcript, mediaTime, excerptIndex]);
+
   return (
     <section className={`excerpt-display ${transcript.lines ? "" : " hidden"}`}>
       <h2>{displayTime}</h2>
-      <h4>{excerpt}</h4>
+      <h4>{transcript.lines ? transcript.lines[excerptIndex].line : ""}</h4>
     </section>
   );
 };

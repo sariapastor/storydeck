@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+use std::fs;
 use serde::{Serialize, Deserialize};
 use mongodb::bson::oid::ObjectId;
 use bson::Bson;
@@ -84,7 +86,7 @@ pub struct Recording {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub name: String,
-    pub file_path: String,
+    pub filename: String,
     pub participants: Vec<Person>,
     #[serde(skip_serializing_if = "Option::is_none", with = "ts_seconds_option")]
     pub date_recorded: Option<DateTime<Utc>>,
@@ -96,16 +98,34 @@ pub struct Recording {
 }
 
 impl Recording {
-    pub fn from_name_and_path(name: &str, file_path: String) -> Self {
-        Recording {
+    pub fn from_name_and_path(name: &str, path: String) -> Result<Self, String> {
+        let file_path = Path::new(&path);
+        let mut data_path = tauri::api::path::document_dir().expect("failed to return Documents path");
+        data_path.push("StoryDecks");
+        let filename = Self::store_recording(file_path, data_path)?;
+
+        Ok(Recording {
             id: ObjectId::new(),
             name: name.to_owned(),
-            file_path,
+            filename,
             participants: Vec::new(),
             date_recorded: Some(Utc::now()),
             recording_location: None,
             transcript_status: TranscriptStatus::Processing,
             transcript: None
+        })
+    }
+
+    fn store_recording(src_path: &Path, mut dest_path: PathBuf) -> Result<String, String> {
+        if let Some(file_as_osstr) = src_path.file_name() {
+            let filename = file_as_osstr.to_string_lossy();
+            dest_path.push(filename.as_ref());
+            match fs::copy(src_path, dest_path) {
+                Ok(_) => Ok(filename.to_string()),
+                Err(e) => Err(format!("failed to copy recording file with error: {}", e))
+            }
+        } else {
+            Err(String::from("unable to parse file name from provided path"))
         }
     }
 }

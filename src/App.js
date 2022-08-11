@@ -27,10 +27,10 @@ function App() {
         updateActive("card", newCard._id);
         if (filePath) {
           console.log(
-            `invoking create_transcript with filename: ${filePath} and cardId: ${newCard._id}`
+            `invoking create_transcript with filePath: ${filePath} and cardId: ${newCard._id}`
           );
           invoke("create_transcript", {
-            filename: filePath,
+            filePath,
             cardId: newCard._id,
           })
             .then(() => reloadDecksAndCardsFromDB())
@@ -117,7 +117,7 @@ function App() {
         />
         <MainDisplay
           currentView={viewStack[viewStack.length - 1]}
-          setViewStack={setViewStack}
+          // setViewStack={setViewStack}
           decks={decks}
           cards={cards}
           updateActive={updateActive}

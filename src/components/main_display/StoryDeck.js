@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 const StoryDeck = ({ deck, updateActive }) => {
   const summary = deck.description ? deck.description : "";
-  const setToActive = () => updateActive("deck", deck);
+  const setToActive = () => updateActive("deck", deck._id);
   return (
     <div className="deck-container" onClick={setToActive}>
       <div className="card-element top">

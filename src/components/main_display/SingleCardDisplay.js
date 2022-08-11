@@ -5,26 +5,27 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 
 const SingleCardDisplay = ({ card }) => {
-  const [transcript, setTranscript] = useState([]);
+  const [transcript, setTranscript] = useState({});
   const [mediaTime, setMediaTime] = useState(0);
   useEffect(() => {
     if (card.recording) {
-      switch (card.recording.transcriptionStatus) {
-        case "complete":
-          invoke("query_by_transcript_id", {
-            _id: card.recording.transcriptId,
+      switch (card.recording.transcriptStatus) {
+        case "Complete":
+          invoke("query_transcripts", {
+            filter: { _id: card.recording.transcript },
           }).then((response) => {
-            setTranscript(JSON.parse(response));
+            setTranscript(JSON.parse(response)[0]);
           });
           break;
-        case "error":
-          setTranscript(["Unable to transcribe"]);
+        case "Error":
+          setTranscript({ lines: [{ line: "Unable to transcribe" }] });
           break;
-        case "processing":
-          setTranscript(["Transcribing recording.."]);
+        case "Processing":
+          setTranscript({ lines: [{ line: "Transcript processing.." }] });
           break;
         case undefined:
         default:
+          console.log(card);
           break;
       }
     }
@@ -69,7 +70,7 @@ SingleCardDisplay.propTypes = {
         $oid: PropTypes.string,
       }),
     }),
-  }).isRequired,
+  }),
 };
 
 export default SingleCardDisplay;

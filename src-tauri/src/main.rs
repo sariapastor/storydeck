@@ -82,7 +82,10 @@ async fn create_transcript(
       let db_response = db::create_transcript(&state.db, transcript_result, card_id).await;
       match db_response {
         Ok(new_transcript) => Ok(serde_json::to_string(&new_transcript).expect("failed to parse transcript")),
-        Err(e) => Err(format!("failed to create transcript with error: {}", e))
+        Err(e) => {
+          let _update = db::update_record(&state.db, "card", card_id, doc! { "$set": { "recording.transcriptStatus": "Error" }}).await;
+          Err(format!("failed to create transcript with error: {}", e))
+        }
       }
   } else {
     Err(String::from("failed to transcribe and split"))
@@ -109,6 +112,21 @@ async fn query_cards_and_decks(
       Ok(cards_n_decks_tup) => Ok(serde_json::to_string(&cards_n_decks_tup).expect("failed to parse card and deck results")),
       Err(e) => Err(format!("failed to return query with error: {}", e))
     }
+}
+
+#[tauri::command]
+async fn query_transcripts(
+  filter: Document, state: tauri::State<'_, AppState>
+) -> Result<String, String> {
+  // if let Ok(filter_doc) = bson::ser::to_document(&filter) {
+    let db_response = db::query_transcripts(&state.db, filter).await;
+    match db_response {
+      Ok(transcript) => Ok(serde_json::to_string(&transcript).expect("failed to parse transcript")),
+      Err(e) => Err(format!("failed to return query with error: {}", e))
+    }
+  // } else {
+  //   Err(String::from("failed to parse query filter"))
+  // }
 }
 
 #[tauri::command]
@@ -165,7 +183,8 @@ async fn main() {
     })
     .manage(state)
     .invoke_handler(tauri::generate_handler![
-      create_story_card, create_story_deck, query_cards_and_decks, update_record, delete_record, create_transcript
+      create_story_card, create_story_deck, query_cards_and_decks, update_record,
+      delete_record, create_transcript, query_transcripts
       ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

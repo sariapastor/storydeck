@@ -10,9 +10,13 @@ use models::*;
 use docs::*;
 
 pub async fn establish_connection() -> MdbResult<Database> {
-    let client_options = ClientOptions::parse(
-        env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!")
-    ).await?;
+    #[cfg(not(debug_assertions))]
+    let connection_string = env!("MONGODB_URI", "MONGODB_URI must be set");
+
+    #[cfg(debug_assertions)]
+    let connection_string = env::var("MONGODB_URI").expect("MONGODB_URI must be set");
+
+    let client_options = ClientOptions::parse(connection_string).await?;
     // set any additional options here as needed with: client_options.key = Some(value)
     
     let client = Client::with_options(client_options)?;

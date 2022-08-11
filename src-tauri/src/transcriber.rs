@@ -52,6 +52,10 @@ pub fn transcribe_and_split(config: Config) -> Result<(String, Vec<Line>), Strin
 }
 
 fn picovoice_transcribe(filename: &str) -> Result<LeopardTranscript, LeopardError> {
+    #[cfg(not(debug_assertions))]
+    let access_key = env!("PV_KEY", "PV_KEY must be set");
+    
+    #[cfg(debug_assertions)]
     let access_key = env::var("PV_KEY").expect("PV_KEY must be set");
 
     let leopard: Leopard = LeopardBuilder::new()

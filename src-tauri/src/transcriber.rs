@@ -63,13 +63,13 @@ fn picovoice_transcribe(filename: &str) -> Result<LeopardTranscript, LeopardErro
 }
 
 fn convert_to_lines(transcript_words: Vec<LeopardWord>) -> Vec<Line> {
-    let mut words = transcript_words.iter().enumerate();
+    let words = transcript_words.iter().enumerate();
     let mut lines = Vec::new();
     let mut line_in_progress = Line {start_time: 0.0, end_time: 0.0, line: String::new()};
-    while let Some((i, word)) = words.next() {
+    for (i, word) in words {
         line_in_progress.end_time = word.end_sec;
         line_in_progress.line.push_str(&word.word);
-        line_in_progress.line.push_str(" ");
+        line_in_progress.line.push(' ');
         if (i+1) % 60 == 0 {
             lines.push(line_in_progress.clone());
             line_in_progress.start_time = line_in_progress.end_time;

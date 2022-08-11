@@ -13,7 +13,7 @@ pub async fn establish_connection() -> MdbResult<Database> {
     let client_options = ClientOptions::parse(
         env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!")
     ).await?;
-    // set any additional options here as needed with: client_options.key = Some(value)
+     // set any additional options here as needed with: client_options.key = Some(value)
     
     let client = Client::with_options(client_options)?;
     Ok(client.database("capstone_project"))
@@ -45,7 +45,7 @@ pub async fn create_transcript(
     let transcript_id = ObjectId::new();
     let new_transcript = Transcript { id: transcript_id, language: String::from("english"), text: transcript.0, lines: transcript.1 };
     let insert = db.collection::<Transcript>("transcripts").insert_one(&new_transcript, None).await?;
-    let _update = update_record(&db, "card", card_id, doc! { "$set": { "recording.transcript": insert.inserted_id } }).await?;
+    let _update = update_record(db, "card", card_id, doc! { "$set": { "recording.transcript": insert.inserted_id } }).await?;
     Ok(new_transcript)
 }
 

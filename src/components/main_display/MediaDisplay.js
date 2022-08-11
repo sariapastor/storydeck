@@ -15,7 +15,7 @@ MediaDisplay.propTypes = {
     }),
     name: PropTypes.string,
     filePath: PropTypes.string,
-  }).isRequired,
+  }),
 };
 
 export default MediaDisplay;

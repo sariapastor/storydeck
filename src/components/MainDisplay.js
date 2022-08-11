@@ -19,14 +19,14 @@ const MainDisplay = ({
     case "single-deck":
       return (
         <ExpandedStoryDeck
-          deck={currentView.activeDeck}
+          deck={decks.find((d) => d._id.$oid === currentView.activeDeck.$oid)}
           updateActive={updateActive}
         />
       );
     case "single-card":
       return (
         <SingleCardDisplay
-          card={currentView.activeCard}
+          card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
           updateActive={updateActive}
         />
       );

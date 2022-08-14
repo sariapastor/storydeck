@@ -4,14 +4,8 @@ import SingleCardDisplay from "./main_display/SingleCardDisplay";
 import ExpandedStoryDeck from "./main_display/ExpandedStoryDeck";
 import "./MainDisplay.css";
 
-const MainDisplay = ({
-  currentView,
-  setViewStack,
-  decks,
-  cards,
-  updateActive,
-}) => {
-  console.log("md: ", currentView);
+const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
+  console.log("currentView: ", currentView);
 
   switch (currentView.view) {
     case "loading":
@@ -48,7 +42,7 @@ MainDisplay.propTypes = {
     activeCard: PropTypes.object,
     activeDeck: PropTypes.object,
   }).isRequired,
-  setViewStack: PropTypes.func.isRequired,
+  // setViewStack: PropTypes.func.isRequired,
   decks: PropTypes.array.isRequired,
   cards: PropTypes.array.isRequired,
   updateActive: PropTypes.func.isRequired,

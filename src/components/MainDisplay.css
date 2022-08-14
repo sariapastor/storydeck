@@ -2,7 +2,9 @@
     padding: 5px 11px 11px 5px;
     border-radius: 10px;
     transition: 0.2s all;
-    /* transform: rotate(0deg); */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .deck-container:hover {

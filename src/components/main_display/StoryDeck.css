@@ -1,0 +1,75 @@
+.collection-title {
+    font-family: "oddly-calming";
+    font-size: 1.5rem;
+}
+.collection-description {
+    visibility: hidden;
+}
+
+.deck-container:hover .collection-description {
+    visibility: visible;
+}
+
+.cassette-rack {
+    height: 25vw;
+    width: 20vw;
+    background: saddlebrown;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 0.3vw;
+}
+
+.rack-background {
+    position: absolute;
+    height: 23vw;
+    width: 15vw;
+    background: rgb(84, 37, 3);
+}
+
+.tape-slot {
+    height: 4.5vw;
+    width: 19vw;
+    display: flex;
+    direction: row;
+    justify-content: center;
+    align-items: center;
+    background: rgb(84, 37, 3);
+}
+
+.tape-case {
+    height: 4.5vw;
+    width: 19vw;
+    border: 1px solid grey;
+    background: rgba(190, 190, 190, 0.1);
+    -webkit-backdrop-filter: blur(0.3px);
+    backdrop-filter: blur(0.3px);
+    position: absolute;
+    z-index: 2;
+    border-radius: 0.3vw;
+}
+
+.tape-label {
+    width: 18vw;
+    height: 3.6vw;
+    background: linear-gradient(rgba(130, 130, 130, 0.2) 0%, rgba(130,130,130,0.3) 6%,
+        rgba(220, 220, 220, 1.0) 7%, rgba(220, 220, 220, 1.0) 85%, rgb(148, 208, 106) 86%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 0.5vw;
+    font-family: 'handy-organizer';
+    font-size: 1rem;
+    z-index: 1;
+}
+
+.empty-slot {
+    width: 100%;
+    height: 100%;
+    background: rgb(84, 37, 3);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

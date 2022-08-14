@@ -24,14 +24,16 @@ function App() {
       .then((response) => {
         const newCard = JSON.parse(response);
         setCards([...cards, newCard]);
-        updateActive("card", newCard);
+        updateActive("card", newCard._id);
         if (filePath) {
-          console.log("invoking create_transcript");
+          console.log(
+            `invoking create_transcript with filePath: ${filePath} and cardId: ${newCard._id}`
+          );
           invoke("create_transcript", {
-            filename: filePath,
+            filePath,
             cardId: newCard._id,
           })
-            .then((response) => console.log(response))
+            .then(() => reloadDecksAndCardsFromDB())
             .catch((e) => console.log(e));
         }
       })
@@ -47,7 +49,7 @@ function App() {
         const newDeck = JSON.parse(response);
         newDeck.cards = [];
         setDecks([...decks, newDeck]);
-        updateActive("deck", newDeck);
+        updateActive("deck", newDeck._id);
       })
       .then(() => reloadDecksAndCardsFromDB())
       .catch((e) => console.log(e));
@@ -70,16 +72,16 @@ function App() {
     }
   };
 
-  const updateActive = (type, value) => {
+  const updateActive = (type, oid) => {
     const newView = { ...viewStack[-1] };
     switch (type) {
       case "deck":
         newView.view = "single-deck";
-        newView.activeDeck = value;
+        newView.activeDeck = oid;
         break;
       case "card":
         newView.view = "single-card";
-        newView.activeCard = value;
+        newView.activeCard = oid;
         break;
       default:
         console.log("executing default");
@@ -115,7 +117,7 @@ function App() {
         />
         <MainDisplay
           currentView={viewStack[viewStack.length - 1]}
-          setViewStack={setViewStack}
+          // setViewStack={setViewStack}
           decks={decks}
           cards={cards}
           updateActive={updateActive}

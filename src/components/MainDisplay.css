@@ -42,3 +42,28 @@
     flex-flow: row wrap;
     justify-content: space-around;
 }
+
+.excerpt-display {
+    width: 85vw;
+    margin: auto;
+}
+
+.expanded-card-summary {
+    width: 80vw;
+    margin: auto;
+    padding: 2vw;
+    border: 3px solid #a95410;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.overview {
+    width: 25vw;
+}
+
+.view-buttons {
+    display: flex;
+    flex-direction: column;
+    padding-top: 2vw;
+}

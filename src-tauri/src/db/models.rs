@@ -17,6 +17,7 @@ pub struct Plan {
     pub decks: Vec<ObjectId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(rename = "plannedRecordings")]
     pub planned_recordings: Vec<PlannedRecording>,
 }
 
@@ -24,15 +25,15 @@ impl Plan {
     // TODO: Refactor these into one method
     pub fn people(&self) -> Vec<&Person> {
         self.planned_recordings.iter()
-            .filter(|pr| !pr.people.is_none())
-            .flat_map(|pr| pr.people.as_ref().unwrap().into_iter())
+            .filter(|pr| pr.people.is_some())
+            .flat_map(|pr| pr.people.as_ref().unwrap().iter())
             .collect()
     }
     
     pub fn places(&self) -> Vec<&Location> {
         self.planned_recordings.iter()
-            .filter(|pr| !pr.places.is_none())
-            .flat_map(|pr| pr.places.as_ref().unwrap().into_iter())
+            .filter(|pr| pr.places.is_some())
+            .flat_map(|pr| pr.places.as_ref().unwrap().iter())
             .collect()
     }
 }

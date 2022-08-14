@@ -14,12 +14,8 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
     setFormFields({ ...formFields, name: e.target.value });
   };
 
-  const onPathChange = (e) => {
-    setFormFields({ ...formFields, recordingFilePath: e.target.value });
-  };
-
-  const onFormSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (e) => {
+    // e.preventDefault();
 
     switch (updateResource) {
       case "Deck":
@@ -47,37 +43,53 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
     hideForm();
   };
 
+  const createDialog = () => {
+    // const input = document.getElementById("filePath");
+    window.__TAURI__.dialog
+      .open({
+        multiple: false,
+        directory: false,
+        recursive: true,
+      })
+      .then((p) => {
+        if (p) {
+          setFormFields({ ...formFields, recordingFilePath: p });
+          console.log("added to formFields: ", p);
+        }
+      })
+      .catch((e) => console.log(e));
+  };
+
   return (
     <section className={`${isUpdating ? "active-form" : "hidden-form"}`}>
       <section className="form-container">
         <button className="close pointer" onClick={cancelAdd}>
           ✖
         </button>
-        <form onSubmit={onFormSubmit}>
-          <div>
-            <label htmlFor="name">Name for new resource:</label>
-            <br />
-            <input
-              name="name"
-              value={formFields.name}
-              onChange={onNameChange}
-            />
-          </div>
-          <div
-            className={`${
-              updateResource === "Recording" ? "active-field" : "hidden-field"
-            }`}
-          >
-            <label htmlFor="filePath">Recording File Path:</label>
-            <br />
-            <input
-              name="filePath"
-              value={formFields.recordingFilePath}
-              onChange={onPathChange}
-            />
-          </div>
-          <input type="submit" value={`Add New ${updateResource}`} />
-        </form>
+        <div>
+          <label htmlFor="name">Name for new resource:</label>
+          <br />
+          <input name="name" value={formFields.name} onChange={onNameChange} />
+        </div>
+        <div
+          className={`${
+            updateResource === "Recording" ? "active-field" : "hidden-field"
+          }`}
+        >
+          {/* <label htmlFor="filePath">Recording File Path:</label> */}
+          {/* <br /> */}
+          {/* <input
+              id="filePath"
+              type="file"
+              // value={formFields.recordingFilePath}
+              onChange={onFileChange}
+              // className="hidden"
+            /> */}
+          <button onClick={createDialog}>Choose Recording File</button>
+        </div>
+        <button onClick={handleSubmit}> Add New {updateResource}</button>
+        {/* <input type="submit" value={`Add New ${updateResource}`} /> */}
+        {/* </form> */}
       </section>
     </section>
   );

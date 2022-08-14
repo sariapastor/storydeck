@@ -4,9 +4,10 @@ import TranscriptExcerptDisplay from "./TranscriptExcerptDisplay";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 
-const SingleCardDisplay = ({ card }) => {
+const SingleCardDisplay = ({ card, updateActive }) => {
   const [transcript, setTranscript] = useState({});
   const [mediaTime, setMediaTime] = useState(0);
+
   useEffect(() => {
     if (card.recording) {
       switch (card.recording.transcriptStatus) {
@@ -31,13 +32,34 @@ const SingleCardDisplay = ({ card }) => {
     }
   }, [card]);
 
+  const makeEditable = (e) => {
+    console.log(e);
+  };
+
   return (
     <div className="card-expansion">
       <MediaDisplay recording={card.recording} setMediaTime={setMediaTime} />
       <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />
       <section className="expanded-card-summary">
-        <h3>{card.name}</h3>
-        <h4>Other info</h4>
+        <section className="overview">
+          <h2>{card.name}</h2>
+          <section className="related">
+            <h4>[related decks/cards here]</h4>
+            {/* {card.decks.map((deck) => (
+              <div>{deck._id.$oid}</div>
+            ))} */}
+          </section>
+        </section>
+        <section className="long-description">
+          <h3>Recording summary</h3>
+          <p onClick={makeEditable}>
+            {card.description ? card.description : "Click to add description"}
+          </p>
+        </section>
+        <section className="view-buttons">
+          <button>View full transcript</button>
+          <button>View notes</button>
+        </section>
       </section>
     </div>
   );
@@ -64,13 +86,21 @@ SingleCardDisplay.propTypes = {
         $oid: PropTypes.string,
       }),
       name: PropTypes.string,
-      filePath: PropTypes.string,
-      transcriptionStatus: PropTypes.string,
+      filename: PropTypes.string,
+      transcriptStatus: PropTypes.string,
       transcriptId: PropTypes.shape({
         $oid: PropTypes.string,
       }),
     }),
+    decks: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.shape({
+          $oid: PropTypes.string,
+        }),
+      })
+    ),
   }),
+  updateActive: PropTypes.func,
 };
 
 export default SingleCardDisplay;

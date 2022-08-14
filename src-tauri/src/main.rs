@@ -60,7 +60,7 @@ async fn create_story_card(
   name: String, file_path: Option<String>, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
   let db_response = if let Some(path) = file_path {
-    let recording = Recording::from_name_and_path(&name, path);
+    let recording = Recording::from_name_and_path(&name, path)?;
     db::create_story_card(&state.db, state.default_deck, name, Some(recording), None).await
   } else {
     let plan = PlannedRecording::from_name(&name);
@@ -74,21 +74,22 @@ async fn create_story_card(
 
 #[tauri::command]
 async fn create_transcript(
-  filename: String, card_id: ObjectId, state: tauri::State<'_, AppState>
+  file_path: String, card_id: ObjectId, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
-  let config = transcriber::Config::from_filename(filename).expect("failed to make transcriber config"); 
-  if let Ok(transcript_result) = transcriber::transcribe_and_split(config) {
+  let config = transcriber::Config::from_path(file_path).expect("failed to make transcriber config"); 
+  match transcriber::transcribe_and_split(config) {
+    Ok(transcript_result) => {
       println!("transcript completed");
       let db_response = db::create_transcript(&state.db, transcript_result, card_id).await;
       match db_response {
         Ok(new_transcript) => Ok(serde_json::to_string(&new_transcript).expect("failed to parse transcript")),
         Err(e) => {
           let _update = db::update_record(&state.db, "card", card_id, doc! { "$set": { "recording.transcriptStatus": "Error" }}).await;
-          Err(format!("failed to create transcript with error: {}", e))
+          Err(format!("failed to create transcript db record with error: {}", e))
         }
       }
-  } else {
-    Err(String::from("failed to transcribe and split"))
+    },
+    Err(e) => Err(format!("failed to transcribe and split with error: {}", e))
   }
 }
 
@@ -167,6 +168,7 @@ async fn main() {
   };
 
   tauri::Builder::default()
+    // .plugin(tauri_plugin_persisted_scope::init())
     .setup(|app| {
       let win = app.get_window("main").unwrap();
       win.set_transparent_titlebar(true);

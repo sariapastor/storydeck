@@ -4,13 +4,13 @@ use crate::db::docs::Line;
 
 pub struct Config {
     pub language: String,
-    pub filename: String,
+    pub file_path: String,
 }
 
 impl Config {
-    pub fn new(language: String, filename: String) -> Result<Config, &'static str> {
-        // TODO: perform some validation on the filename and return Err if invalid
-        Ok(Config { language, filename })
+    pub fn new(language: String, file_path: String) -> Result<Config, &'static str> {
+        // TODO: perform some validation on the file path and return Err if invalid
+        Ok(Config { language, file_path })
     }
 
     pub fn from_cli(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
@@ -21,25 +21,25 @@ impl Config {
             None => return Err("Invalid parameters: none provided"),
         };
 
-        let filename = match args.next() {
+        let file_path = match args.next() {
             Some(arg) => arg,
-            None => return Err("Invalid parameters: missing a filename or language"),
+            None => return Err("Invalid parameters: missing a file path or language"),
         };
-        // TODO: perform some validation on the filename and return Err if invalid
+        // TODO: perform some validation on the file path and return Err if invalid
 
-        Ok(Config { language, filename })
+        Ok(Config { language, file_path })
     }
 
-    pub fn from_filename(filename: String) -> Result<Config, &'static str> {
-        // TODO: perform some validation on the filename and return Err if invalid
-        Ok(Config { language: String::from("english"), filename })
+    pub fn from_path(file_path: String) -> Result<Config, &'static str> {
+        // TODO: perform some validation on the file_path and return Err if invalid
+        Ok(Config { language: String::from("english"), file_path })
     }
 }
 
 pub fn transcribe_and_split(config: Config) -> Result<(String, Vec<Line>), String> {
     let transcript_result = match config.language.as_ref() {
         "english" => {
-            match picovoice_transcribe(&config.filename) {
+            match picovoice_transcribe(&config.file_path) {
                 Ok(transcript) => transcript,
                 Err(e) => return Err(format!("transcription failed with error: {:?}", e))
             }},
@@ -51,7 +51,7 @@ pub fn transcribe_and_split(config: Config) -> Result<(String, Vec<Line>), Strin
     Ok((full_transcript, lines_vec))
 }
 
-fn picovoice_transcribe(filename: &str) -> Result<LeopardTranscript, LeopardError> {
+fn picovoice_transcribe(file_path: &str) -> Result<LeopardTranscript, LeopardError> {
     let access_key = env::var("PV_KEY").expect("PV_KEY must be set");
 
     let leopard: Leopard = LeopardBuilder::new()
@@ -59,7 +59,7 @@ fn picovoice_transcribe(filename: &str) -> Result<LeopardTranscript, LeopardErro
         .enable_automatic_punctuation(true)
         .init()?;
     
-    leopard.process_file(filename)
+    leopard.process_file(file_path)
 }
 
 fn convert_to_lines(transcript_words: Vec<LeopardWord>) -> Vec<Line> {
@@ -70,7 +70,7 @@ fn convert_to_lines(transcript_words: Vec<LeopardWord>) -> Vec<Line> {
         line_in_progress.end_time = word.end_sec;
         line_in_progress.line.push_str(&word.word);
         line_in_progress.line.push(' ');
-        if (i+1) % 60 == 0 {
+        if (i+1) % 40 == 0 {
             lines.push(line_in_progress.clone());
             line_in_progress.start_time = line_in_progress.end_time;
             line_in_progress.line = String::new();

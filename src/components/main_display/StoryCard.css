@@ -1,0 +1,94 @@
+.cassette-container {
+    --scenePerspective: 400;
+    --caseRotateY: 30;
+    --caseRotateX: 0;
+    --caseRotateZ: 0;
+    --perspectiveOriginX: 50;
+    --perspectiveOriginY: 50;
+    width: 20vw;
+    height: 30vw;
+    perspective: calc(var(--scenePerspective) * 1px);
+    perspective-origin: calc(var(--perspectiveOriginX) * 1%) calc(var(--perspectiveOriginY) * 1%);
+}
+
+.vertical-tape-case {
+    width: 200px;
+    height: 310px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: translateZ(-100px) rotateY(calc(var(--caseRotateY) * 1deg)) 
+        rotateX(calc(var(--caseRotateX) * 1deg)) rotateZ(calc(var(--caseRotateZ) * 1deg));
+    transition: all 0.5s ease-in-out;
+}
+
+/* .cassette-container:hover .vertical-tape-case {
+    transform: translateZ(-100px) rotateY(calc(var(--caseRotateY) * 6deg)) 
+        rotateX(calc(var(--caseRotateX) * 1deg)) rotateZ(calc(var(--caseRotateZ) * 1deg));
+} */
+
+.vertical-tape-case:hover {
+    transform: translateZ(-100px) rotateY(calc(var(--caseRotateY) * 1.5deg)) 
+        rotateX(calc(var(--caseRotateX) * 1deg)) rotateZ(calc(var(--caseRotateZ) * 1deg));
+}
+
+.face{
+    position: absolute;
+    backface-visibility: inherit;
+    border: 1px solid black;
+    background: rgba(190,190,190,0.5);
+    border-radius: 3px;
+}
+
+.cassette {
+    width: 95%;
+    height: 95%;
+    background: linear-gradient(90deg,rgba(225,225,225,1.0) 0%, rgba(225,225,225,1.0) 100%);
+    transform: rotateY(0deg) translateZ(18px) translateY(8px) translateX(6px);
+    border-radius: 6px;
+}
+
+.front {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,rgba(170,225,171,1.0) 0%, rgba(170,225,171,1.0) 44%,
+        rgba(190,190,190,0.5) 44%, rgba(190,190,190,0.5) 100%);
+    transform: rotateY(0deg) translateZ(24px);
+}
+
+.label-spine {
+    width: 48px;
+    height: 100%;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    background: linear-gradient(to right, rgb(170,225,171), rgb(170,225,171) 20%, rgb(230,230,230) 20%);
+    transform: rotateY(90deg) translateZ(-24px);
+}
+
+.back {
+    width: 100%;
+    height: 100%;
+    transform: rotateY(-180deg) translateZ(24px);
+    background: linear-gradient(90deg, rgb(230,230,230), rgb(230,230,230) 20%,
+        black 20%, black 21%, rgb(230,230,230) 21%, rgb(230,230,230) 40%,
+        black 40%, black 41%, rgb(230,230,230) 41%, rgb(230,230,230) 60%,
+        black 60%, black 61%, rgb(230,230,230) 61%, rgb(230,230,230) 80%,
+        black 80%, black 81%, rgb(230,230,230) 81%)
+}
+
+.open-spine {
+    width: 48px;
+    height: 100%;
+    transform: rotateY(-90deg) translateZ(-176px);
+}
+
+.top {
+    width: 100%;
+    height: 48px;
+    transform: rotateX(90deg) translateZ(24px);
+}
+
+.bottom {
+    width: 100%;
+    height: 48px;
+    transform: rotateX(90deg) translateZ(-286px);
+}

@@ -1,6 +1,5 @@
 .collection-title {
     font-family: "oddly-calming";
-    /* font-style: italic; */
     font-size: 1.5rem;
 }
 .collection-description {
@@ -15,7 +14,6 @@
     height: 25vw;
     width: 20vw;
     background: saddlebrown;
-    /* border: 1vw solid saddlebrown; */
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -38,33 +36,25 @@
     justify-content: center;
     align-items: center;
     background: rgb(84, 37, 3);
-    /* border: 0.2vw solid brown; */
 }
-
-/* .tape-slot:first-child {
-    border-top: 0.45vw solid brown; 
-}
-
-.tape-slot:last-child {
-    border-bottom: 0.45vw solid brown;
-} */
 
 .tape-case {
     height: 4.5vw;
     width: 19vw;
     border: 1px solid grey;
-    background: rgba(152, 152, 152, 0.2);
-    backdrop-filter: blur 1px;
+    background: rgba(190, 190, 190, 0.1);
+    -webkit-backdrop-filter: blur(0.3px);
+    backdrop-filter: blur(0.3px);
     position: absolute;
     z-index: 2;
     border-radius: 0.3vw;
 }
 
 .tape-label {
-    /* display: inline; */
     width: 18vw;
-    height: 3.8vw;
-    background: linear-gradient(rgba(130, 130, 130, 0.2) 0%, rgba(130,130,130,0.3) 6%, rgba(220, 220, 220, 1.0) 7%, rgba(220, 220, 220, 1.0) 85%, rgb(148, 208, 106) 86%);
+    height: 3.6vw;
+    background: linear-gradient(rgba(130, 130, 130, 0.2) 0%, rgba(130,130,130,0.3) 6%,
+        rgba(220, 220, 220, 1.0) 7%, rgba(220, 220, 220, 1.0) 85%, rgb(148, 208, 106) 86%);
     display: flex;
     justify-content: center;
     align-items: center;

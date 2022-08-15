@@ -5,7 +5,7 @@ const StoryDeck = ({ deck, updateActive }) => {
   const summary = deck.description ? deck.description : "";
   const setToActive = () => updateActive("deck", deck._id);
   return (
-    <div className="deck-container" onClick={setToActive}>
+    <div className="collection-container" onClick={setToActive}>
       <div className="collection-title">
         <h3>{deck.name}</h3>
       </div>

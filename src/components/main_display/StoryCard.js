@@ -20,8 +20,9 @@ const StoryCard = ({ card, updateActive }) => {
       >
         <div className="face front"></div>
         <div className="face cassette"></div>
+        <div className="face cassette obverse"></div>
         <div className="face label-spine">{card.name}</div>
-        <div className="face back">{summary}</div>
+        <div className="face back">{summary} SOme text</div>
         <div className="face open-spine"></div>
         <div className="face top"></div>
         <div className="face bottom"></div>

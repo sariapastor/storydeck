@@ -5,6 +5,7 @@
     min-height: 310px;
     perspective: 900px;
     perspective-origin: 50% 50%;
+    margin: auto 5vw;
 }
 
 .vertical-tape-case {

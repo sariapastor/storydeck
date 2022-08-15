@@ -115,7 +115,7 @@ function App() {
   return (
     <>
       <Header
-        title="Story Decks"
+        title="Story Deck"
         setUpdating={setUpdating}
         viewStack={viewStack}
         setViewStack={setViewStack}

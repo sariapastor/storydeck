@@ -57,7 +57,13 @@ const SingleCardDisplay = ({ card, updateActive }) => {
           </p>
         </section>
         <section className="view-buttons">
-          <button>View full transcript</button>
+          <button
+            onClick={() => {
+              updateActive("transcript", card.recording.transcript);
+            }}
+          >
+            View full transcript
+          </button>
           <button>View notes</button>
         </section>
       </section>
@@ -88,7 +94,7 @@ SingleCardDisplay.propTypes = {
       name: PropTypes.string,
       filename: PropTypes.string,
       transcriptStatus: PropTypes.string,
-      transcriptId: PropTypes.shape({
+      transcript: PropTypes.shape({
         $oid: PropTypes.string,
       }),
     }),

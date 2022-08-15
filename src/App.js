@@ -11,7 +11,7 @@ function App() {
   const [decks, setDecks] = useState([]);
   const [updating, setUpdating] = useState([false, ""]);
   const [viewStack, setViewStack] = useState([
-    { view: "loading", activeDeck: {}, activeCard: {} },
+    { view: "loading", activeDeck: {}, activeCard: {}, activeTranscript: {} },
   ]);
 
   const hideForm = () => setUpdating([false, ""]);
@@ -73,7 +73,7 @@ function App() {
   };
 
   const updateActive = (type, oid) => {
-    const newView = { ...viewStack[-1] };
+    const newView = { ...viewStack[viewStack.length - 1] };
     switch (type) {
       case "deck":
         newView.view = "single-deck";
@@ -82,6 +82,10 @@ function App() {
       case "card":
         newView.view = "single-card";
         newView.activeCard = oid;
+        break;
+      case "transcript":
+        newView.view = "full-transcript";
+        newView.activeTranscript = oid;
         break;
       default:
         console.log("executing default");
@@ -92,7 +96,14 @@ function App() {
 
   useEffect(() => {
     reloadDecksAndCardsFromDB().then(() =>
-      setViewStack([{ view: "decks-overview", activeDeck: {}, activeCard: {} }])
+      setViewStack([
+        {
+          view: "decks-overview",
+          activeDeck: {},
+          activeCard: {},
+          activeTranscript: {},
+        },
+      ])
     );
   }, []);
 

@@ -1,29 +1,32 @@
 import PropTypes from "prop-types";
-// import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api";
+import "./FullTranscriptView.css";
 
-const FullTranscriptView = ({ transcript, card }) => {
-  <section className="full-text">
-    <h2>
-      {card.recording.name} [{card.recording.filename}]
-    </h2>
-    <p>{transcript.text}</p>
-  </section>;
+const FullTranscriptView = ({ transcriptId, card }) => {
+  const [transcript, setTranscript] = useState({
+    text: "Loading transcript..",
+  });
+  useEffect(() => {
+    invoke("query_transcripts", {
+      filter: { _id: transcriptId },
+    }).then((response) => {
+      setTranscript(JSON.parse(response)[0]);
+    });
+  }, [transcriptId]);
+  return (
+    <section className="full-text">
+      <h2>
+        {card.recording.name} [{card.recording.filename}]
+      </h2>
+      <p>{transcript.text}</p>
+    </section>
+  );
 };
 
 FullTranscriptView.propTypes = {
-  transcript: PropTypes.shape({
-    _id: PropTypes.shape({
-      $oid: PropTypes.string,
-    }),
-    language: PropTypes.string,
-    text: PropTypes.string,
-    lines: PropTypes.arrayOf(
-      PropTypes.shape({
-        startTime: PropTypes.number,
-        endTime: PropTypes.number,
-        line: PropTypes.string,
-      })
-    ),
+  transcriptId: PropTypes.shape({
+    $oid: PropTypes.string,
   }).isRequired,
   card: PropTypes.shape({
     _id: PropTypes.shape({
@@ -75,7 +78,7 @@ FullTranscriptView.propTypes = {
           notes: PropTypes.string,
         })
       ),
-      dateRecorded: PropTypes.datetime,
+      dateRecorded: PropTypes.number,
       recordingLocation: PropTypes.shape({
         name: PropTypes.string,
         locData: PropTypes.shape({

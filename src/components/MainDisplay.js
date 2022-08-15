@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import StoryDeck from "./main_display/StoryDeck";
 import SingleCardDisplay from "./main_display/SingleCardDisplay";
 import ExpandedStoryDeck from "./main_display/ExpandedStoryDeck";
+import FullTranscriptView from "./main_display/FullTranscriptView";
 import "./MainDisplay.css";
 
 const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
@@ -22,6 +23,13 @@ const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
         <SingleCardDisplay
           card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
           updateActive={updateActive}
+        />
+      );
+    case "full-transcript":
+      return (
+        <FullTranscriptView
+          transcriptId={currentView.activeTranscript}
+          card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
         />
       );
     case "decks-overview":

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import ReactWaves from "@dschoon/react-waves";
 import { documentDir, join } from "@tauri-apps/api/path";
+import "./MediaDisplay.css";
 
 const MediaDisplay = ({ recording, setMediaTime }) => {
   const [playing, setPlaying] = useState(false);
@@ -54,7 +55,7 @@ const MediaDisplay = ({ recording, setMediaTime }) => {
               cursorWidth: 0,
               height: 200,
               hideScrollbar: true,
-              progressColor: "#EC407A",
+              progressColor: "#AAD1AB",
               responsive: true,
               waveColor: "#D1D6DA",
             }}
@@ -65,7 +66,7 @@ const MediaDisplay = ({ recording, setMediaTime }) => {
           {/* <audio src={file} type="audio/x-wav" controls />{" "} */}
         </>
       ) : (
-        <div>Loading media..</div>
+        <div className="placeholder">Loading media..</div>
       )}
     </section>
   );

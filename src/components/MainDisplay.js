@@ -35,11 +35,11 @@ const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
     case "decks-overview":
     default:
       return (
-        <>
+        <section className="collections-layout">
           {decks.map((deck, index) => (
             <StoryDeck key={index} deck={deck} updateActive={updateActive} />
           ))}
-        </>
+        </section>
       );
   }
 };

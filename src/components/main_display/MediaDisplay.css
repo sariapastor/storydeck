@@ -1,0 +1,13 @@
+.media-display {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.placeholder {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.play {
+    font-size: 3rem;
+}

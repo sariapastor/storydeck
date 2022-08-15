@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "storydecks",
+    "productName": "storydeck",
     "version": "0.1.0"
   },
   "tauri": {
@@ -65,10 +65,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
-        "title": "Story Decks",
-        "width": 800
+        "title": "Story Deck",
+        "width": 1000
       }
     ]
   }

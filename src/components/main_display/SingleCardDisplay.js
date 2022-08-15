@@ -3,6 +3,7 @@ import MediaDisplay from "./MediaDisplay";
 import TranscriptExcerptDisplay from "./TranscriptExcerptDisplay";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
+import "./SingleCardDisplay.css";
 
 const SingleCardDisplay = ({ card, updateActive }) => {
   const [transcript, setTranscript] = useState({});

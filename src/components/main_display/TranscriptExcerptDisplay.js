@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import "./TranscriptExcerptDisplay.css";
 
 const TranscriptExcerptDisplay = ({ transcript, mediaTime }) => {
   const [excerptIndex, setExcerptIndex] = useState(0);

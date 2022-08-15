@@ -1,0 +1,14 @@
+/* .deck-expansion {
+
+}
+
+.expanded-deck-summary {
+
+} */
+
+.deck-cards-layout {
+    width: 90vw;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+}

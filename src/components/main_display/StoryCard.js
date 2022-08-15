@@ -2,21 +2,29 @@ import PropTypes from "prop-types";
 import "./StoryCard.css";
 
 const StoryCard = ({ card, updateActive }) => {
-  // const summary = card.description ? card.description : "";
-  const setToActive = () => updateActive("card", card._id);
+  const summary = card.description ? card.description : "";
+  const setToActive = (e) => updateActive("card", card._id);
+  const unflip = (e) => e.target.childNodes[0].classList.add("resetting");
+  const resetDone = (e) => {
+    if (e.animationName === "reversetapeflip") {
+      e.target.classList.remove("resetting");
+    }
+  };
+
   return (
-    <div className="cassette-container" onClick={setToActive}>
-      <div className="vertical-tape-case">
+    <div className="cassette-container" onMouseLeave={unflip}>
+      <div
+        className="vertical-tape-case"
+        onClick={setToActive}
+        onAnimationEnd={resetDone}
+      >
         <div className="face front"></div>
         <div className="face cassette"></div>
         <div className="face label-spine">{card.name}</div>
-        <div className="face back"></div>
+        <div className="face back">{summary}</div>
         <div className="face open-spine"></div>
         <div className="face top"></div>
         <div className="face bottom"></div>
-        {/* <div className="label-sticker"> */}
-        {/* <h3>{card.name}</h3> */}
-        {/* </div> */}
       </div>
     </div>
   );

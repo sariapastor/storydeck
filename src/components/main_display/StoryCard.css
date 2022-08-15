@@ -1,14 +1,10 @@
 .cassette-container {
-    --scenePerspective: 400;
-    --caseRotateY: 30;
-    --caseRotateX: 0;
-    --caseRotateZ: 0;
-    --perspectiveOriginX: 50;
-    --perspectiveOriginY: 50;
     width: 20vw;
-    height: 30vw;
-    perspective: calc(var(--scenePerspective) * 1px);
-    perspective-origin: calc(var(--perspectiveOriginX) * 1%) calc(var(--perspectiveOriginY) * 1%);
+    min-width: 200px;
+    height: 31vw;
+    min-height: 310px;
+    perspective: 900px;
+    perspective-origin: 50% 50%;
 }
 
 .vertical-tape-case {
@@ -16,19 +12,55 @@
     height: 310px;
     position: relative;
     transform-style: preserve-3d;
-    transform: translateZ(-100px) rotateY(calc(var(--caseRotateY) * 1deg)) 
-        rotateX(calc(var(--caseRotateX) * 1deg)) rotateZ(calc(var(--caseRotateZ) * 1deg));
-    transition: all 0.5s ease-in-out;
+    transform: translateZ(-100px) rotateY(30deg) 
+        rotateX(0deg) rotateZ(0deg);
 }
 
-/* .cassette-container:hover .vertical-tape-case {
-    transform: translateZ(-100px) rotateY(calc(var(--caseRotateY) * 6deg)) 
-        rotateX(calc(var(--caseRotateX) * 1deg)) rotateZ(calc(var(--caseRotateZ) * 1deg));
-} */
+.vertical-tape-case.resetting {
+    animation: reversetapeflip 1s ease-in-out forwards;
+}
 
-.vertical-tape-case:hover {
-    transform: translateZ(-100px) rotateY(calc(var(--caseRotateY) * 1.5deg)) 
-        rotateX(calc(var(--caseRotateX) * 1deg)) rotateZ(calc(var(--caseRotateZ) * 1deg));
+.cassette-container:hover .vertical-tape-case {
+    animation: tapeflip 2s ease-in-out forwards;
+}
+
+@keyframes tapeflip {
+    0% {
+        transform: translateZ(-100px) rotateY(30deg) 
+            rotateX(0deg) rotateZ(0deg);
+    }
+    25% {
+        transform: translateZ(-100px) rotateY(45deg) 
+            rotateX(0deg) rotateZ(0deg);
+    }
+    50% {
+        transform: translateZ(-100px) rotateY(45deg) 
+            rotateX(0deg) rotateZ(0deg);
+    }
+    75% {
+        transform: translateZ(-100px) rotateY(180deg) 
+            rotateX(0deg) rotateZ(0deg);
+    }
+    100% {
+        transform: translateZ(-100px) rotateY(180deg) 
+            rotateX(0deg) rotateZ(-90deg);
+    }
+}
+
+@keyframes reversetapeflip {
+    0% {
+        transform: translateZ(-100px) rotateY(180deg)
+            rotateX(0deg) rotateZ(-90deg);
+    }
+    25% {
+        transform: translateZ(-100px) rotateY(180deg)
+            rotateX(0deg) rotateZ(0deg);
+    }
+    100% {
+        
+        transform: translateZ(-100px) rotateY(30deg)
+            rotateX(0deg) rotateZ(0deg);
+    }
 }
 
 .face{
@@ -57,11 +89,17 @@
 
 .label-spine {
     width: 48px;
-    height: 100%;
+    height: 303px;
     writing-mode: vertical-lr;
     text-orientation: mixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 0.5vw;
+    font-family: 'handy-organizer';
+    font-size: 1rem;
     background: linear-gradient(to right, rgb(170,225,171), rgb(170,225,171) 20%, rgb(230,230,230) 20%);
-    transform: rotateY(90deg) translateZ(-24px);
+    transform: rotateY(-90deg) rotateZ(180deg) translateZ(24px);
 }
 
 .back {

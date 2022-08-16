@@ -11,6 +11,7 @@ const MainDisplay = ({
   cards,
   updateRecord,
   updateActive,
+  newDeckFromCard,
 }) => {
   console.log("currentView: ", currentView);
 
@@ -28,8 +29,10 @@ const MainDisplay = ({
       return (
         <SingleCardDisplay
           card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
+          decks={decks}
           updateRecord={updateRecord}
           updateActive={updateActive}
+          newDeckFromCard={newDeckFromCard}
         />
       );
     case "full-transcript":

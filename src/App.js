@@ -68,7 +68,7 @@ function App() {
       });
       setDecks(processedDecks);
     } catch (e) {
-      return console.log(e);
+      console.log(e);
     }
   };
 
@@ -127,6 +127,21 @@ function App() {
     }
   };
 
+  const newDeckFromCard = (card) => {
+    invoke("create_story_deck", { name: "untitled collection" })
+      .then((response) => {
+        const newDeck = JSON.parse(response);
+        newDeck.cards = [card];
+        setDecks([...decks, newDeck]);
+        const updatedCard = { ...card };
+        updatedCard.decks.push(newDeck._id);
+        updateRecord("card", updatedCard, { decks: updatedCard.decks }, true);
+        updateActive("deck", newDeck._id);
+      })
+      .then(() => reloadDecksAndCardsFromDB())
+      .catch((e) => console.log(e));
+  };
+
   useEffect(() => {
     reloadDecksAndCardsFromDB().then(() =>
       setViewStack([
@@ -165,6 +180,7 @@ function App() {
           cards={cards}
           updateRecord={updateRecord}
           updateActive={updateActive}
+          newDeckFromCard={newDeckFromCard}
         />
       </main>
     </>

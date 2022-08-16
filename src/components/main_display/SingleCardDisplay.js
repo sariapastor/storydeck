@@ -5,7 +5,13 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import "./SingleCardDisplay.css";
 
-const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
+const SingleCardDisplay = ({
+  card,
+  decks,
+  updateRecord,
+  updateActive,
+  newDeckFromCard,
+}) => {
   const [transcript, setTranscript] = useState({});
   const [mediaTime, setMediaTime] = useState(0);
 
@@ -34,7 +40,7 @@ const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
   }, [card]);
 
   const updateCard = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     const attribute = e.target.className;
     const updatedCard = { ...card };
     updatedCard[attribute] = e.target.textContent;
@@ -44,22 +50,35 @@ const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
     updateRecord("card", updatedCard, change, isCommit);
   };
 
+  const updateRelatedDecks = (oid) => {
+    document.getElementById("deckPicker").classList.add("hidden");
+    const updatedCard = { ...card };
+    updatedCard.decks.push(oid);
+    const change = { decks: updatedCard.decks };
+    updateRecord("card", updatedCard, change, true);
+  };
+
+  const showDeckPicker = () => {
+    document.getElementById("deckPicker").classList.remove("hidden");
+  };
+
   return (
     <div className="card-expansion">
       <MediaDisplay recording={card.recording} setMediaTime={setMediaTime} />
       <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />
       <section className="expanded-card-summary">
+        <div id="deckPicker" className="deck-picker hidden">
+          {decks
+            .filter((d) => !card.decks.some((cd) => cd.$oid === d._id.$oid))
+            .map((d) => (
+              <div onClick={() => updateRelatedDecks(d._id)}>{d.name}</div>
+            ))}
+          <div onClick={() => newDeckFromCard(card)}>
+            + create new collection
+          </div>
+        </div>
         <section className="overview">
           <h2>{card.name}</h2>
-          <section className="related">
-            <h4>[related decks/cards here]</h4>
-            {/* {card.decks.map((deck) => (
-              <div>{deck._id.$oid}</div>
-            ))} */}
-          </section>
-        </section>
-        <section className="long-description">
-          <h3>Recording summary</h3>
           <p
             className="description"
             contentEditable={true}
@@ -68,6 +87,20 @@ const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
           >
             {card.description}
           </p>
+        </section>
+        <section className="related">
+          <h4>related collections</h4>
+          <ul>
+            {card.decks.map((deck) => (
+              <li
+                className="deck-link"
+                onClick={() => updateActive("deck", deck)}
+              >
+                {decks.find((d) => d._id.$oid === deck.$oid).name}
+              </li>
+            ))}
+            <li onClick={showDeckPicker}>+ Add to another</li>
+          </ul>
         </section>
         <section className="view-buttons">
           <button

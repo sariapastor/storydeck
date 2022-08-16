@@ -95,7 +95,7 @@ async fn create_transcript(
 
 #[tauri::command]
 async fn create_story_deck(
-  name: String, state: tauri::State<'_, AppState> // cards: Option<Vec<ObjectId>>
+  name: String, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
   let db_response = db::create_story_deck(&state.db, name).await;
   match db_response {
@@ -125,9 +125,6 @@ async fn query_transcripts(
       Ok(transcript) => Ok(serde_json::to_string(&transcript).expect("failed to parse transcript")),
       Err(e) => Err(format!("failed to return query with error: {}", e))
     }
-  // } else {
-  //   Err(String::from("failed to parse query filter"))
-  // }
 }
 
 #[tauri::command]

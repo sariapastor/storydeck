@@ -35,11 +35,12 @@ const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
 
   const updateCard = (e) => {
     e.preventDefault();
+    const attribute = e.target.className;
     const updatedCard = { ...card };
-    updatedCard[e.target.name] = e.target.value;
-    const isCommit = e.type === "submit";
+    updatedCard[attribute] = e.target.textContent;
+    const isCommit = e.type === "blur";
     const change = {};
-    change[e.target.name] = card[e.target.name];
+    change[attribute] = card[attribute];
     updateRecord("card", updatedCard, change, isCommit);
   };
 
@@ -59,14 +60,14 @@ const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
         </section>
         <section className="long-description">
           <h3>Recording summary</h3>
-          <form name="description" onSubmit={updateCard}>
-            <input
-              type="text"
-              name="description"
-              onChange={updateCard}
-              value={card.description}
-            />
-          </form>
+          <p
+            className="description"
+            contentEditable={true}
+            onInput={updateCard}
+            onBlur={updateCard}
+          >
+            {card.description}
+          </p>
         </section>
         <section className="view-buttons">
           <button

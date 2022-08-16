@@ -6,10 +6,41 @@
     border-radius: 5px;
     display: flex;
     justify-content: space-around;
+    transform: rotate(0deg);
 }
 
 .overview {
     width: 25vw;
+    padding-right: 3vw;
+    border-right: 2px solid black;
+}
+
+.overview h2 {
+    margin-top: 0vw;
+}
+
+.related {
+    padding-right: 3vw;
+    border-right: 2px solid black;
+}
+
+.related h4 {
+    margin-top: 1vw;
+    font-family: "lucky-skirt";
+}
+
+.related ul {
+    list-style-type: none;
+    padding-inline-start: 15px;
+}
+
+.related li {
+    font-family: "scholarly-ambition";
+    cursor: pointer;
+}
+
+.related li:hover {
+    color:aquamarine;
 }
 
 .view-buttons {
@@ -21,4 +52,17 @@
 .description {
     max-width: 25vw;
     font-size: 0.8rem;
+}
+
+.deck-picker {
+    position: absolute;
+    top: 0vw;
+    background: var(--bg-color);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 2;
 }

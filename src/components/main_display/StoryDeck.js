@@ -13,7 +13,7 @@ const StoryDeck = ({ deck, updateActive }) => {
         <div className="rack-background"></div>
         {[0, 1, 2, 3, 4].map((i) => (
           <div className="tape-slot" key={i}>
-            {i + 1 < deck.cards.length ? (
+            {i < deck.cards.length ? (
               <>
                 <div className="tape-label">{deck.cards[i].name}</div>
                 <div className="tape-case"></div>

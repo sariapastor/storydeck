@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 const menuItems = {
   TELLING: "+ New Recording",
   TEMPLATE: "+ New Planned Recording",
-  DECK: "+ New Deck Group",
+  DECK: "+ New Collection",
 };
 
 const NewButton = ({ setUpdating }) => {

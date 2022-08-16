@@ -41,6 +41,7 @@ const MainDisplay = ({
         <FullTranscriptView
           transcriptId={currentView.activeTranscript}
           card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
+          updateRecord={updateRecord}
         />
       );
     case "decks-overview":

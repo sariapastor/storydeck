@@ -119,12 +119,27 @@ async fn query_cards_and_decks(
 async fn query_transcripts(
   filter: Document, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
-  // if let Ok(filter_doc) = bson::ser::to_document(&filter) {
     let db_response = db::query_transcripts(&state.db, filter).await;
     match db_response {
       Ok(transcript) => Ok(serde_json::to_string(&transcript).expect("failed to parse transcript")),
       Err(e) => Err(format!("failed to return query with error: {}", e))
     }
+}
+
+#[tauri::command]
+async fn rename_file(
+  recording_id: ObjectId, filename: String, state: tauri::State<'_, AppState>
+) -> Result<String, String> {
+    let db_response = db::query_cards_and_decks(&state.db, Some(doc! {"recording": { "_id": recording_id }})).await;
+    let cards = match db_response {
+      Ok(result_tuple) => result_tuple.0,
+      Err(e) => return Err(format!("failed to locate recording with error: {}", e))
+    };
+    let card = cards.first().expect("this slice should not be empty");
+    if let db::models::StoryCard::Telling(take) = card {
+      take.recording.rename_recording(&filename)
+    } else { Err(String::from("failed to parse card object")) 
+  }
 }
 
 #[tauri::command]
@@ -184,7 +199,7 @@ async fn main() {
     .manage(state)
     .invoke_handler(tauri::generate_handler![
       create_story_card, create_story_deck, query_cards_and_decks, update_record,
-      delete_record, create_transcript, query_transcripts
+      delete_record, create_transcript, query_transcripts, rename_file
       ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

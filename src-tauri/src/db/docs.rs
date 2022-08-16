@@ -128,4 +128,15 @@ impl Recording {
             Err(String::from("unable to parse file name from provided path"))
         }
     }
+
+    pub fn rename_recording(&self, new_name: &str) -> Result<String, String> {
+        let mut data_path = tauri::api::path::document_dir().expect("failed to return Documents path");
+        data_path.push("StoryDecks");
+        let src_path: PathBuf = [&data_path, &PathBuf::from(&self.filename)].iter().collect();
+        let dest_path: PathBuf = [&data_path, &PathBuf::from(new_name)].iter().collect();
+        match fs::rename(src_path, dest_path) {
+            Ok(_) => Ok(format!("file successfully renamed: {}", new_name)),
+            Err(e) => Err(format!("failed to rename file with error: {}", e))
+        }
+    }
 }

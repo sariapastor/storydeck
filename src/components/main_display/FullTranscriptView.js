@@ -3,10 +3,25 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import "./FullTranscriptView.css";
 
-const FullTranscriptView = ({ transcriptId, card }) => {
+const FullTranscriptView = ({ transcriptId, card, updateRecord }) => {
   const [transcript, setTranscript] = useState({
     text: "Loading transcript..",
   });
+  const updateRecording = (e) => {
+    const attribute = e.target.className;
+    const updatedCard = { ...card };
+    updatedCard.recording[attribute] = e.target.textContent;
+    const isCommit = e.type === "blur";
+    const change = {};
+    change["recording"][attribute] = updatedCard.recording[attribute];
+    updateRecord("card", updatedCard, change, isCommit);
+    if (attribute === "filename") {
+      invoke("rename_file", {
+        recordingId: card.recording._id,
+        filename: e.target.className,
+      }).catch((e) => console.log(e));
+    }
+  };
   useEffect(() => {
     invoke("query_transcripts", {
       filter: { _id: transcriptId },
@@ -16,8 +31,21 @@ const FullTranscriptView = ({ transcriptId, card }) => {
   }, [transcriptId]);
   return (
     <section className="full-text">
-      <h2>
-        {card.recording.name} [{card.recording.filename}]
+      <h2
+        className="name"
+        contentEditable={true}
+        onChange={updateRecording}
+        onBlur={updateRecording}
+      >
+        {card.recording.name}
+      </h2>
+      <h2
+        className="filename"
+        contentEditable={true}
+        onChange={updateRecording}
+        onBlur={updateRecording}
+      >
+        {card.recording.filename}
       </h2>
       <p>{transcript.text}</p>
     </section>

@@ -6,11 +6,12 @@ const ExpandedStoryDeck = ({ deck, updateActive }) => {
   const cardComponents = deck.cards.map((card, index) => (
     <StoryCard key={index} card={card} updateActive={updateActive} />
   ));
+  const summary = deck.description ? deck.description : "Add description";
   return (
     <div className="deck-expansion">
       <section className="expanded-deck-summary">
-        <h3>{deck.name}</h3>
-        <h4>Other info</h4>
+        <h2>{deck.name}</h2>
+        <p>{summary}</p>
       </section>
       <div className="deck-cards-layout">{cardComponents}</div>
     </div>

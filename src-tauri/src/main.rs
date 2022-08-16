@@ -153,7 +153,7 @@ async fn main() {
 
   let add_telling = CustomMenuItem::new("Add Telling", "Add new recording..");
   let add_template = CustomMenuItem::new("Add Template", "Add planned recording(s)..");
-  let add_deck = CustomMenuItem::new("Add Deck", "Add new deck grouping..");
+  let add_deck = CustomMenuItem::new("Add Deck", "Add new collection..");
   let submenu = Submenu::new("File", Menu::with_items([ 
     add_telling.into(), add_template.into(), add_deck.into() 
   ]));

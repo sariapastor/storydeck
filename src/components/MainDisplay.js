@@ -23,6 +23,7 @@ const MainDisplay = ({
         <ExpandedStoryDeck
           deck={decks.find((d) => d._id.$oid === currentView.activeDeck.$oid)}
           updateActive={updateActive}
+          updateRecord={updateRecord}
         />
       );
     case "single-card":

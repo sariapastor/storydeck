@@ -46,7 +46,7 @@ const SingleCardDisplay = ({
     updatedCard[attribute] = e.target.textContent;
     const isCommit = e.type === "blur";
     const change = {};
-    change[attribute] = card[attribute];
+    change[attribute] = updatedCard[attribute];
     updateRecord("card", updatedCard, change, isCommit);
   };
 
@@ -78,11 +78,18 @@ const SingleCardDisplay = ({
           </div>
         </div>
         <section className="overview">
-          <h2>{card.name}</h2>
+          <h2
+            className="name"
+            contentEditable={true}
+            onChange={updateCard}
+            onBlur={updateCard}
+          >
+            {card.name}
+          </h2>
           <p
             className="description"
             contentEditable={true}
-            onInput={updateCard}
+            onChange={updateCard}
             onBlur={updateCard}
           >
             {card.description}

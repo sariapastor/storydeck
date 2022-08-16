@@ -1,17 +1,43 @@
 import PropTypes from "prop-types";
 import StoryCard from "./StoryCard";
+// import { useState } from "react";
 import "./ExpandedStoryDeck.css";
 
-const ExpandedStoryDeck = ({ deck, updateActive }) => {
+const ExpandedStoryDeck = ({ deck, updateActive, updateRecord }) => {
+  // const [displayName, setDisplayName] = useState(deck.name);
   const cardComponents = deck.cards.map((card, index) => (
     <StoryCard key={index} card={card} updateActive={updateActive} />
   ));
   const summary = deck.description ? deck.description : "Add description";
+  const updateDeck = (e) => {
+    // setDisplayName(e.target.textContent);
+    const attribute = e.target.className;
+    const updatedDeck = { ...deck };
+    updatedDeck[attribute] = e.target.textContent;
+    const isCommit = e.type === "blur";
+    const change = {};
+    change[attribute] = updatedDeck[attribute];
+    updateRecord("deck", updatedDeck, change, isCommit);
+  };
   return (
     <div className="deck-expansion">
       <section className="expanded-deck-summary">
-        <h2>{deck.name}</h2>
-        <p>{summary}</p>
+        <h2
+          className="name"
+          contentEditable={true}
+          onChange={updateDeck}
+          onBlur={updateDeck}
+        >
+          {deck.name}
+        </h2>
+        <p
+          className="description"
+          contentEditable={true}
+          onChange={updateDeck}
+          onBlur={updateDeck}
+        >
+          {summary}
+        </p>
       </section>
       <div className="deck-cards-layout">{cardComponents}</div>
     </div>

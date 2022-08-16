@@ -17,3 +17,8 @@
     flex-direction: column;
     padding-top: 2vw;
 }
+
+.description {
+    max-width: 25vw;
+    font-size: 0.8rem;
+}

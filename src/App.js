@@ -88,10 +88,43 @@ function App() {
         newView.activeTranscript = oid;
         break;
       default:
-        console.log("executing default");
+        console.log("executing default for unmatched input type: ", type);
         break;
     }
     setViewStack([...viewStack, newView]);
+  };
+
+  const updateRecord = (type, record, change, isCommit) => {
+    console.log(type, change, isCommit);
+    switch (type) {
+      case "card":
+        const updatedCards = cards.map((card) =>
+          card._id.$oid === record._id.$oid ? record : card
+        );
+        setCards(updatedCards);
+        break;
+      case "deck":
+        const updatedDecks = decks.map((deck) =>
+          deck._id.$oid === record._id.$oid ? record : deck
+        );
+        setDecks(updatedDecks);
+        break;
+      case "transcript":
+        // do nothing here but transcript state should be updated at subcomponent
+        break;
+      default:
+        console.log("executing default for unmatched input type: ", type);
+        break;
+    }
+    if (isCommit) {
+      invoke("update_record", {
+        recordType: type,
+        id: record._id,
+        update: change,
+      })
+        .then(() => reloadDecksAndCardsFromDB())
+        .catch((e) => console.log(e));
+    }
   };
 
   useEffect(() => {
@@ -128,9 +161,9 @@ function App() {
         />
         <MainDisplay
           currentView={viewStack[viewStack.length - 1]}
-          // setViewStack={setViewStack}
           decks={decks}
           cards={cards}
+          updateRecord={updateRecord}
           updateActive={updateActive}
         />
       </main>

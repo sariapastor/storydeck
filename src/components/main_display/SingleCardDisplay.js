@@ -5,7 +5,7 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import "./SingleCardDisplay.css";
 
-const SingleCardDisplay = ({ card, updateActive }) => {
+const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
   const [transcript, setTranscript] = useState({});
   const [mediaTime, setMediaTime] = useState(0);
 
@@ -33,8 +33,15 @@ const SingleCardDisplay = ({ card, updateActive }) => {
     }
   }, [card]);
 
-  const makeEditable = (e) => {
-    console.log(e);
+  const updateCard = (e) => {
+    e.preventDefault();
+    const attribute = e.target.className;
+    const updatedCard = { ...card };
+    updatedCard[attribute] = e.target.textContent;
+    const isCommit = e.type === "blur";
+    const change = {};
+    change[attribute] = updatedCard[attribute];
+    updateRecord("card", updatedCard, change, isCommit);
   };
 
   return (
@@ -43,18 +50,21 @@ const SingleCardDisplay = ({ card, updateActive }) => {
       <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />
       <section className="expanded-card-summary">
         <section className="overview">
-          <h2>{card.name}</h2>
-          <section className="related">
-            <h4>[related decks/cards here]</h4>
-            {/* {card.decks.map((deck) => (
-              <div>{deck._id.$oid}</div>
-            ))} */}
-          </section>
-        </section>
-        <section className="long-description">
-          <h3>Recording summary</h3>
-          <p onClick={makeEditable}>
-            {card.description ? card.description : "Click to add description"}
+          <h2
+            className="name"
+            contentEditable={true}
+            onChange={updateCard}
+            onBlur={updateCard}
+          >
+            {card.name}
+          </h2>
+          <p
+            className="description"
+            contentEditable={true}
+            onChange={updateCard}
+            onBlur={updateCard}
+          >
+            {card.description}
           </p>
         </section>
         <section className="view-buttons">

@@ -5,7 +5,13 @@ import ExpandedStoryDeck from "./main_display/ExpandedStoryDeck";
 import FullTranscriptView from "./main_display/FullTranscriptView";
 import "./MainDisplay.css";
 
-const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
+const MainDisplay = ({
+  currentView,
+  decks,
+  cards,
+  updateRecord,
+  updateActive,
+}) => {
   console.log("currentView: ", currentView);
 
   switch (currentView.view) {
@@ -16,12 +22,14 @@ const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
         <ExpandedStoryDeck
           deck={decks.find((d) => d._id.$oid === currentView.activeDeck.$oid)}
           updateActive={updateActive}
+          updateRecord={updateRecord}
         />
       );
     case "single-card":
       return (
         <SingleCardDisplay
           card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
+          updateRecord={updateRecord}
           updateActive={updateActive}
         />
       );
@@ -30,6 +38,7 @@ const MainDisplay = ({ currentView, decks, cards, updateActive }) => {
         <FullTranscriptView
           transcriptId={currentView.activeTranscript}
           card={cards.find((c) => c._id.$oid === currentView.activeCard.$oid)}
+          updateRecord={updateRecord}
         />
       );
     case "decks-overview":

@@ -70,7 +70,7 @@
 .face{
     position: absolute;
     backface-visibility: inherit;
-    border: 1px solid black;
+    border: 1px solid rgba(128, 128, 128, 0.5);
     background: rgba(190,190,190,0.5);
     border-radius: 3px;
 }
@@ -79,8 +79,8 @@
     width: 95%;
     height: 95%;
     background: 
-    radial-gradient(circle 15px at 56% 28%, rgb(230,230,230) 85%, black 85%, transparent),
-    radial-gradient(circle 15px at 56% 72%, rgb(230,230,230) 85%, black 85%, transparent),
+    radial-gradient(circle 15px at 56% 28%, rgb(230,230,230) 85%, pink 85%, transparent),
+    radial-gradient(circle 15px at 56% 72%, rgb(230,230,230) 85%, pink 85%, transparent),
     linear-gradient(var(--tape-body-color), var(--tape-body-color) 38%,
         transparent 38%, transparent 62%, var(--tape-body-color) 62%),
     linear-gradient(90deg,var(--tape-body-color) 0%, var(--tape-body-color) 49%,

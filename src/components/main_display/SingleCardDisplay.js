@@ -5,7 +5,7 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import "./SingleCardDisplay.css";
 
-const SingleCardDisplay = ({ card, updateActive }) => {
+const SingleCardDisplay = ({ card, updateRecord, updateActive }) => {
   const [transcript, setTranscript] = useState({});
   const [mediaTime, setMediaTime] = useState(0);
 
@@ -33,8 +33,14 @@ const SingleCardDisplay = ({ card, updateActive }) => {
     }
   }, [card]);
 
-  const makeEditable = (e) => {
-    console.log(e);
+  const updateCard = (e) => {
+    e.preventDefault();
+    const updatedCard = { ...card };
+    updatedCard[e.target.name] = e.target.value;
+    const isCommit = e.type === "submit";
+    const change = {};
+    change[e.target.name] = card[e.target.name];
+    updateRecord("card", updatedCard, change, isCommit);
   };
 
   return (
@@ -53,9 +59,14 @@ const SingleCardDisplay = ({ card, updateActive }) => {
         </section>
         <section className="long-description">
           <h3>Recording summary</h3>
-          <p onClick={makeEditable}>
-            {card.description ? card.description : "Click to add description"}
-          </p>
+          <form name="description" onSubmit={updateCard}>
+            <input
+              type="text"
+              name="description"
+              onChange={updateCard}
+              value={card.description}
+            />
+          </form>
         </section>
         <section className="view-buttons">
           <button

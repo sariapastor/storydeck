@@ -134,6 +134,7 @@ async fn query_transcripts(
 async fn update_record(
   record_type: &str, id: ObjectId, update: Document, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
+  let update = doc! { "$set" : update };
   match db::update_record(&state.db, record_type, id, update).await {
     Ok(update_serialized) => Ok(update_serialized),
     Err(e) => Err(format!("update failed with error: {}", e))

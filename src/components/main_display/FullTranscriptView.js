@@ -12,14 +12,20 @@ const FullTranscriptView = ({ transcriptId, card, updateRecord }) => {
     const updatedCard = { ...card };
     updatedCard.recording[attribute] = e.target.textContent;
     const isCommit = e.type === "blur";
+    const updateField =
+      attribute === "filename" ? "recording.filename" : "recording.name";
     const change = {};
-    change["recording"][attribute] = updatedCard.recording[attribute];
-    updateRecord("card", updatedCard, change, isCommit);
-    if (attribute === "filename") {
+    change[updateField] = updatedCard.recording[attribute];
+    console.log(change);
+    if (isCommit && attribute === "filename") {
       invoke("rename_file", {
         recordingId: card.recording._id,
-        filename: e.target.className,
-      }).catch((e) => console.log(e));
+        filename: e.target.textContent,
+      })
+        .then(() => updateRecord("card", updatedCard, change, isCommit))
+        .catch((e) => console.log(e));
+    } else {
+      updateRecord("card", updatedCard, change, isCommit);
     }
   };
   useEffect(() => {

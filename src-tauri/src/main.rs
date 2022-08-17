@@ -130,7 +130,7 @@ async fn query_transcripts(
 async fn rename_file(
   recording_id: ObjectId, filename: String, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
-    let db_response = db::query_cards_and_decks(&state.db, Some(doc! {"recording": { "_id": recording_id }})).await;
+    let db_response = db::query_cards_and_decks(&state.db, Some(doc! {"recording._id": recording_id })).await;
     let cards = match db_response {
       Ok(result_tuple) => result_tuple.0,
       Err(e) => return Err(format!("failed to locate recording with error: {}", e))

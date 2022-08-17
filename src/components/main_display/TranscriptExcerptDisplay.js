@@ -4,7 +4,10 @@ import "./TranscriptExcerptDisplay.css";
 
 const TranscriptExcerptDisplay = ({ transcript, mediaTime }) => {
   const [excerptIndex, setExcerptIndex] = useState(0);
-  const displayTime = `${Math.floor(mediaTime / 60)}:${mediaTime % 60}`;
+  const minutes = Math.floor(mediaTime / 60);
+  const seconds = mediaTime % 60;
+  const displaySeconds = seconds < 10 ? `0${seconds}` : seconds;
+  const displayTime = `${minutes}:${displaySeconds}`;
   // TODO: convert mediaTime (seconds float) to proper display format
 
   useEffect(() => {

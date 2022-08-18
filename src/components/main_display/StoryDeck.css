@@ -1,6 +1,6 @@
 .collection-container {
     padding: 10px;
-    border-radius: 10px;
+    /* border-radius: 10px; */
     transition: 0.2s all;
     display: flex;
     flex-direction: column;
@@ -17,6 +17,7 @@
 }
 .collection-description {
     visibility: hidden;
+    padding: 3vh;
 }
 
 .collection-container:hover .collection-description {
@@ -24,8 +25,10 @@
 }
 
 .cassette-rack {
-    height: 22.5vw;
-    width: 25vw;
+    /* height: 22.5vw;
+    width: 25vw; */
+    height: 288px;
+    width: 320px;
     background: var(--rack-frame);
     display: flex;
     flex-direction: column;
@@ -45,14 +48,18 @@
 
 .rack-background {
     position: absolute;
-    height: 20vw;
-    width: 18.75vw;
+    /* height: 20vw;
+    width: 18.75vw; */
+    height: 256px;
+    width: 240px;
     background: var(--rack-background);
 }
 
 .tape-slot {
-    height: 3.75vw;
-    width: 23.75vw;
+    /* height: 3.75vw;
+    width: 23.75vw; */
+    height: 48px;
+    width: 304px;
     display: flex;
     direction: row;
     justify-content: center;
@@ -61,8 +68,10 @@
 }
 
 .tape-case {
-    height: 3.75vw;
-    width: 23.75vw;
+    /* height: 3.75vw;
+    width: 23.75vw; */
+    height: 48px;
+    width: 304px;
     border: 1px solid grey;
     background: rgba(190, 190, 190, 0.1);
     -webkit-backdrop-filter: blur(0.4px);
@@ -73,8 +82,10 @@
 }
 
 .tape-label {
-    width: 22.5vw;
-    height: 2.6vw;
+    /* width: 22.5vw;
+    height: 2.6vw; */
+    height: 33px;
+    width: 284px;
     background: linear-gradient(rgba(130, 130, 130, 0.2) 0%, rgba(130,130,130,0.3) 6%,
         rgba(220, 220, 220, 1.0) 7%, rgba(220, 220, 220, 1.0) 85%, rgb(148, 208, 106) 86%);
     display: flex;
@@ -87,8 +98,10 @@
 }
 
 .empty-slot {
-    width: 100%;
-    height: 100%;
+    /* width: 100%;
+    height: 100%; */
+    height: 48px;
+    width: 304px;
     background: var(--rack-background);
     display: flex;
     flex-direction: row;

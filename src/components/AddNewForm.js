@@ -60,34 +60,41 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
       .catch((e) => console.log(e));
   };
 
+  const resourceDisplayName =
+    updateResource === "Deck" ? "Collection" : "Recording";
+
   return (
     <section className={`${isUpdating ? "active-form" : "hidden-form"}`}>
       <section className="form-container">
-        <button className="close pointer" onClick={cancelAdd}>
+        <button className="close" onClick={cancelAdd}>
           ✖
         </button>
-        <div>
-          <label htmlFor="name">Name for new resource:</label>
-          <br />
-          <input name="name" value={formFields.name} onChange={onNameChange} />
+        <div className="fields">
+          <div className="name-field">
+            <label htmlFor="name">
+              Name for new {resourceDisplayName.toLowerCase()}:
+            </label>
+            {/* <br /> */}
+            <input
+              name="name"
+              value={formFields.name}
+              onChange={onNameChange}
+            />
+          </div>
+          <div
+            className={`${
+              updateResource === "Recording" ? "active-field" : "hidden-field"
+            }`}
+          >
+            <button onClick={createDialog}>Choose File</button>
+            <div className="filename-display">
+              {formFields.recordingFilePath.split("/").pop()}
+            </div>
+          </div>
         </div>
-        <div
-          className={`${
-            updateResource === "Recording" ? "active-field" : "hidden-field"
-          }`}
-        >
-          {/* <label htmlFor="filePath">Recording File Path:</label> */}
-          {/* <br /> */}
-          {/* <input
-              id="filePath"
-              type="file"
-              // value={formFields.recordingFilePath}
-              onChange={onFileChange}
-              // className="hidden"
-            /> */}
-          <button onClick={createDialog}>Choose Recording File</button>
-        </div>
-        <button onClick={handleSubmit}> Add New {updateResource}</button>
+        <button className="sub" onClick={handleSubmit}>
+          Add New {resourceDisplayName}
+        </button>
         {/* <input type="submit" value={`Add New ${updateResource}`} /> */}
         {/* </form> */}
       </section>

@@ -1,28 +1,30 @@
+import React from 'react';
+
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { appWindow } from "@tauri-apps/api/window";
-import Header from "./components/Header";
-import MainDisplay from "./components/MainDisplay";
-import AddNewForm from "./components/AddNewForm";
+import { Header } from "./components/Header";
+import { MainDisplay } from "./components/MainDisplay";
+import { AddNewResourceForm } from "./components/AddNewForm";
 import "./App.css";
+import { DBRecord, NewRecordingInfo, StoryDeck, Telling, ViewState } from "./types";
+import { ObjectIdExtended } from 'bson';
 
-function App() {
-  const [cards, setCards] = useState([]);
-  const [decks, setDecks] = useState([]);
-  const [updating, setUpdating] = useState([false, ""]);
-  const [viewStack, setViewStack] = useState([
-    { view: "loading", activeDeck: {}, activeCard: {}, activeTranscript: {} },
-  ]);
+function App(): JSX.Element {
+  const [cards, setCards] = useState<Telling[]>([]);
+  const [decks, setDecks] = useState<StoryDeck[]>([]);
+  const [updating, setUpdating] = useState<[boolean, string]>([false, ""]);
+  const [viewStack, setViewStack] = useState<ViewState[]>([ { view: "loading" } ]);
 
-  const hideForm = () => setUpdating([false, ""]);
+  const hideForm = (): void => setUpdating([false, ""]);
 
-  const addNewCard = ({ name, recordingFilePath }) => {
+  const addNewCard = ({ name, recordingFilePath }: NewRecordingInfo) => {
     hideForm();
     const filePath = recordingFilePath.length === 0 ? null : recordingFilePath;
     console.log("invoking create_story_card");
-    invoke("create_story_card", { name, filePath })
+    invoke<string>("create_story_card", { name, filePath })
       .then((response) => {
-        const newCard = JSON.parse(response);
+        const newCard: Telling = JSON.parse(response);
         setCards([...cards, newCard]);
         updateActive("card", newCard._id);
         if (filePath) {
@@ -34,17 +36,17 @@ function App() {
             cardId: newCard._id,
           })
             .then(() => reloadDecksAndCardsFromDB())
-            .catch((e) => console.log(e));
+            .catch(console.log);
         }
       })
       .then(() => reloadDecksAndCardsFromDB())
-      .catch((e) => console.log(e));
+      .catch(console.log);
   };
 
-  const addNewDeck = ({ name }) => {
+  const addNewDeck = ( name: string ) => {
     hideForm();
     console.log("invoking create_story_deck");
-    invoke("create_story_deck", { name })
+    invoke<string>("create_story_deck", { name })
       .then((response) => {
         const newDeck = JSON.parse(response);
         newDeck.cards = [];
@@ -52,13 +54,13 @@ function App() {
         updateActive("deck", newDeck._id);
       })
       .then(() => reloadDecksAndCardsFromDB())
-      .catch((e) => console.log(e));
+      .catch(console.log);
   };
 
   const reloadDecksAndCardsFromDB = async () => {
     try {
-      const response = await invoke("query_cards_and_decks", {});
-      const [cardsResponse, decksResponse] = JSON.parse(response);
+      const response = await invoke<string>("query_cards_and_decks", {});
+      const [cardsResponse, decksResponse]: [Telling[], StoryDeck[]] = JSON.parse(response);
       setCards(cardsResponse);
       const processedDecks = decksResponse.map((deck) => {
         const deckCards = cardsResponse.filter((card) =>
@@ -72,8 +74,8 @@ function App() {
     }
   };
 
-  const updateActive = (type, oid) => {
-    const newView = { ...viewStack[viewStack.length - 1] };
+  const updateActive = (type: "deck" | "card" | "transcript", oid: ObjectIdExtended): void => {
+    const newView: ViewState = { ...viewStack[viewStack.length - 1] };
     switch (type) {
       case "deck":
         newView.view = "single-deck";
@@ -94,18 +96,18 @@ function App() {
     setViewStack([...viewStack, newView]);
   };
 
-  const updateRecord = (type, record, change, isCommit) => {
+  const updateRecord = (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => {
     console.log(type, change, isCommit);
     switch (type) {
       case "card":
         const updatedCards = cards.map((card) =>
-          card._id.$oid === record._id.$oid ? record : card
+          card._id.$oid === record._id.$oid ? record as Telling : card
         );
         setCards(updatedCards);
         break;
       case "deck":
         const updatedDecks = decks.map((deck) =>
-          deck._id.$oid === record._id.$oid ? record : deck
+          deck._id.$oid === record._id.$oid ? record as StoryDeck : deck
         );
         setDecks(updatedDecks);
         break;
@@ -123,14 +125,14 @@ function App() {
         update: change,
       })
         .then(() => reloadDecksAndCardsFromDB())
-        .catch((e) => console.log(e));
+        .catch(console.log);
     }
   };
 
-  const newDeckFromCard = (card) => {
-    invoke("create_story_deck", { name: "untitled collection" })
+  const newDeckFromCard = (card: Telling) => {
+    invoke<string>("create_story_deck", { name: "untitled collection" })
       .then((response) => {
-        const newDeck = JSON.parse(response);
+        const newDeck: StoryDeck = JSON.parse(response);
         newDeck.cards = [card];
         setDecks([...decks, newDeck]);
         const updatedCard = { ...card };
@@ -139,23 +141,14 @@ function App() {
         updateActive("deck", newDeck._id);
       })
       .then(() => reloadDecksAndCardsFromDB())
-      .catch((e) => console.log(e));
+      .catch(console.log);
   };
 
   useEffect(() => {
-    reloadDecksAndCardsFromDB().then(() =>
-      setViewStack([
-        {
-          view: "decks-overview",
-          activeDeck: {},
-          activeCard: {},
-          activeTranscript: {},
-        },
-      ])
-    );
+    reloadDecksAndCardsFromDB().then(() => setViewStack([ { view: "decks-overview" } ]));
   }, []);
 
-  appWindow.listen("Add", ({ event, payload }) => {
+  appWindow.listen<string>("Add", ({ event, payload }) => {
     console.log(event, payload);
     setUpdating([true, payload]);
   });
@@ -169,7 +162,7 @@ function App() {
         setViewStack={setViewStack}
       />
       <main>
-        <AddNewForm
+        <AddNewResourceForm
           addMethods={[addNewCard, addNewDeck]}
           hideForm={hideForm}
           updating={updating}

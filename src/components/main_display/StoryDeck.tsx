@@ -1,7 +1,14 @@
-import PropTypes from "prop-types";
+import React from 'react';
+import { StoryDeck } from '../../types';
+import { ObjectIdExtended } from 'bson';
 import "./StoryDeck.css";
 
-const StoryDeck = ({ deck, updateActive }) => {
+interface StoryDeckIconProps {
+  deck: StoryDeck;
+  updateActive: (type: "deck" | "card" | "transcript", oid: ObjectIdExtended) => void;
+}
+
+export const StoryDeckIcon: React.FC<StoryDeckIconProps> = ({ deck, updateActive }) => {
   const summary = deck.description ? deck.description : "";
   const setToActive = () => updateActive("deck", deck._id);
   return (
@@ -28,25 +35,3 @@ const StoryDeck = ({ deck, updateActive }) => {
     </div>
   );
 };
-
-StoryDeck.propTypes = {
-  deck: PropTypes.shape({
-    _id: PropTypes.shape({
-      $oid: PropTypes.string,
-    }).isRequired,
-    name: PropTypes.string.isRequired,
-    cards: PropTypes.arrayOf(PropTypes.object),
-    description: PropTypes.string,
-    notes: PropTypes.string,
-    tags: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.shape({
-          $oid: PropTypes.string,
-        }),
-        name: PropTypes.string,
-      })
-    ),
-  }).isRequired,
-};
-
-export default StoryDeck;

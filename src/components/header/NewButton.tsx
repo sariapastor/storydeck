@@ -1,15 +1,15 @@
-import PropTypes from "prop-types";
+import React from 'react';
 
-const menuItems = {
-  TELLING: "+ New Recording",
-  TEMPLATE: "+ New Planned Recording",
-  DECK: "+ New Collection",
+enum menuItems {
+  TELLING = "+ New Recording",
+  TEMPLATE = "+ New Planned Recording",
+  DECK = "+ New Collection",
 };
 
-const NewButton = ({ setUpdating }) => {
-  const showForm = (e) => {
+export const NewButton: React.FC<{setUpdating: any}> = ({ setUpdating }) => {
+  const showForm: React.MouseEventHandler<HTMLLIElement> = (e) => {
     let payload = "";
-    switch (e.target.textContent) {
+    switch ((e.target as HTMLLIElement).textContent) {
       case menuItems.TELLING:
         payload = "Recording";
         break;
@@ -20,7 +20,7 @@ const NewButton = ({ setUpdating }) => {
         payload = "Deck";
         break;
       default:
-        console.log("Unrecognized menu item: ", e.target.textContent);
+        console.log("Unrecognized menu item: ", (e.target as HTMLLIElement).textContent);
     }
     setUpdating([true, payload]);
   };
@@ -35,9 +35,3 @@ const NewButton = ({ setUpdating }) => {
     </div>
   );
 };
-
-NewButton.propTypes = {
-  setUpdating: PropTypes.func.isRequired,
-};
-
-export default NewButton;

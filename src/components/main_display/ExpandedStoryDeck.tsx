@@ -1,21 +1,30 @@
-import PropTypes from "prop-types";
-import StoryCard from "./StoryCard";
-import "./ExpandedStoryDeck.css";
+import React from 'react';
 
-const ExpandedStoryDeck = ({ deck, updateActive, updateRecord }) => {
+import { StoryCard } from "./StoryCard";
+import "./ExpandedStoryDeck.css";
+import { ObjectIdExtended } from 'bson';
+import { DBRecord, StoryDeck } from '../../types';
+
+interface StoryDeckProps {
+  deck: StoryDeck;
+  updateActive: (type: "deck" | "card" | "transcript", oid: ObjectIdExtended) => void;
+  updateRecord: (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => void;
+}
+
+export const ExpandedStoryDeck: React.FC<StoryDeckProps> = ({ deck, updateActive, updateRecord }) => {
   const cardComponents = deck.cards.map((card, index) => (
     <StoryCard key={index} card={card} updateActive={updateActive} />
   ));
 
   const summary = deck.description ? deck.description : "Add description";
 
-  const updateDeck = (e) => {
-    const attribute = e.target.className;
+  const updateDeck = (e: any) => {
+    const attribute = (e.target as HTMLElement).className;
     const updatedDeck = { ...deck };
-    updatedDeck[attribute] = e.target.textContent;
+    updatedDeck[attribute as "name" | "description" | "notes"] = e.target.textContent;
     const isCommit = e.type === "blur";
-    const change = {};
-    change[attribute] = updatedDeck[attribute];
+    const change: {[key: string]: string | undefined} = {};
+    change[attribute] = updatedDeck[attribute as "name" | "description" | "notes"];
     updateRecord("deck", updatedDeck, change, isCommit);
   };
 
@@ -44,24 +53,3 @@ const ExpandedStoryDeck = ({ deck, updateActive, updateRecord }) => {
   );
 };
 
-ExpandedStoryDeck.propTypes = {
-  deck: PropTypes.shape({
-    _id: PropTypes.shape({
-      $oid: PropTypes.string,
-    }).isRequired,
-    name: PropTypes.string.isRequired,
-    cards: PropTypes.arrayOf(PropTypes.object).isRequired,
-    description: PropTypes.string,
-    notes: PropTypes.string,
-    tags: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.shape({
-          $oid: PropTypes.string,
-        }),
-        name: PropTypes.string,
-      })
-    ),
-  }).isRequired,
-};
-
-export default ExpandedStoryDeck;

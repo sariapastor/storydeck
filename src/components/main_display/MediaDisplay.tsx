@@ -1,17 +1,22 @@
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactWaves from "@dschoon/react-waves";
 import { documentDir, join } from "@tauri-apps/api/path";
 import "./MediaDisplay.css";
+import { Recording } from '../../types';
 
-const MediaDisplay = ({ recording, setMediaTime }) => {
+interface MediaDisplayProps {
+  recording: Recording;
+  setMediaTime: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const MediaDisplay: React.FC<MediaDisplayProps> = ({ recording, setMediaTime }) => {
   const [playing, setPlaying] = useState(false);
   const [file, setFile] = useState("");
   const [loaded, setLoaded] = useState(false);
 
-  const onPosChange = (pos) => setMediaTime(pos);
+  const onPosChange = (pos: number) => setMediaTime(pos);
 
-  const recordingBlobUrlFromAssetUrl = async (assetUrl) => {
+  const recordingBlobUrlFromAssetUrl = async (assetUrl: string) => {
     try {
       const response = await fetch(assetUrl, {
         method: "GET",
@@ -28,14 +33,13 @@ const MediaDisplay = ({ recording, setMediaTime }) => {
 
   useEffect(() => {
     if (recording) {
-      documentDir()
-        .then((basePath) => join(basePath, "StoryDecks", recording.filename))
-        .then((fullPath) => "asset://" + fullPath)
-        .then((assetUrl) => recordingBlobUrlFromAssetUrl(assetUrl))
-        .then((blobUrl) => {
-          setFile(blobUrl);
-          setLoaded(true);
-        });
+      (async () => {
+        const pathString: string = await join(await documentDir(), "storydeck", recording.filename);
+        const assetUrl = "asset://" + pathString;
+        const blobUrl = await recordingBlobUrlFromAssetUrl(assetUrl);
+        blobUrl ? setFile(blobUrl): console.log('error getting blob from input');
+        setLoaded(true);
+      })()
     }
   }, [recording]);
 
@@ -71,16 +75,3 @@ const MediaDisplay = ({ recording, setMediaTime }) => {
     </section>
   );
 };
-
-MediaDisplay.propTypes = {
-  recording: PropTypes.shape({
-    _id: PropTypes.shape({
-      $oid: PropTypes.string,
-    }),
-    name: PropTypes.string,
-    filename: PropTypes.string,
-  }),
-  setMediaTime: PropTypes.func.isRequired,
-};
-
-export default MediaDisplay;

@@ -1,8 +1,13 @@
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./TranscriptExcerptDisplay.css";
+import { Transcript } from '../../types';
 
-const TranscriptExcerptDisplay = ({ transcript, mediaTime }) => {
+interface TranscriptExcerptDisplayProps {
+  transcript: Transcript | Omit<Transcript, '_id' | 'language' | 'text'>;
+  mediaTime: number;
+}
+
+export const TranscriptExcerptDisplay: React.FC<TranscriptExcerptDisplayProps> = ({ transcript, mediaTime }) => {
   const [excerptIndex, setExcerptIndex] = useState(0);
   const minutes = Math.floor(mediaTime / 60);
   const seconds = mediaTime % 60;
@@ -30,22 +35,3 @@ const TranscriptExcerptDisplay = ({ transcript, mediaTime }) => {
     </section>
   );
 };
-
-TranscriptExcerptDisplay.propTypes = {
-  transcript: PropTypes.shape({
-    _id: PropTypes.shape({
-      $oid: PropTypes.string,
-    }),
-    language: PropTypes.string,
-    text: PropTypes.string,
-    lines: PropTypes.arrayOf(
-      PropTypes.shape({
-        startTime: PropTypes.number,
-        endTime: PropTypes.number,
-        line: PropTypes.string,
-      })
-    ),
-  }),
-};
-
-export default TranscriptExcerptDisplay;

@@ -4,51 +4,12 @@
 )]
 
 use mongodb::bson::{Document, doc, oid::ObjectId};
-use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
+use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 use db::docs::*;
 
 pub mod db;
 pub mod transcriber;
 
-// code to get native macos window controls without default titlebar 
-// (from here: https://github.com/tauri-apps/tauri/issues/2663)
-use cocoa::appkit::{NSWindow, NSWindowStyleMask};
-use tauri::{Runtime, Window};
-
-pub trait WindowExt {
-  #[cfg(target_os = "macos")]
-  fn set_transparent_titlebar(&self, transparent: bool);
-}
-
-impl<R: Runtime> WindowExt for Window<R> {
-  #[cfg(target_os = "macos")]
-  fn set_transparent_titlebar(&self, transparent: bool) {
-    use cocoa::appkit::NSWindowTitleVisibility;
-
-    unsafe {
-      let id = self.ns_window().unwrap() as cocoa::base::id;
-
-      let mut style_mask = id.styleMask();
-      style_mask.set(
-        NSWindowStyleMask::NSFullSizeContentViewWindowMask,
-        transparent,
-      );
-      id.setStyleMask_(style_mask);
-
-      id.setTitleVisibility_(if transparent {
-        NSWindowTitleVisibility::NSWindowTitleHidden
-      } else {
-        NSWindowTitleVisibility::NSWindowTitleVisible
-      });
-      id.setTitlebarAppearsTransparent_(if transparent {
-        cocoa::base::YES
-      } else {
-        cocoa::base::NO
-      });
-    }
-  }
-}
-// end of native macos window controls code
 
 struct AppState {
   db: mongodb::Database,
@@ -181,12 +142,6 @@ async fn main() {
   };
 
   tauri::Builder::default()
-    // .plugin(tauri_plugin_persisted_scope::init())
-    .setup(|app| {
-      let win = app.get_window("main").unwrap();
-      win.set_transparent_titlebar(true);
-      Ok(())
-    })
     .menu(menu)
     .on_menu_event(move |event| {
       match event.menu_item_id() {

@@ -1,21 +1,21 @@
 @font-face {
   font-family: "oddly-calming";
-  src: url('./fonts/OddlyCalming/Oddly\ Calming.ttf');
+  src: url('/fonts/OddlyCalming/Oddly\ Calming.ttf');
 }
 
 @font-face {
   font-family: "lucky-skirt";
-  src: url('./fonts/LuckySkirt/Lucky\ Skirt.ttf');
+  src: url('/fonts/LuckySkirt/Lucky\ Skirt.ttf');
 }
 
 @font-face {
   font-family: "handy-organizer";
-  src: url('./fonts/HandyOrganizer/Handy\ Organizer.ttf');
+  src: url('/fonts/HandyOrganizer/Handy\ Organizer.ttf');
 }
 
 @font-face {
   font-family: "scholarly-ambition";
-  src: url('./fonts/ScholarlyAmbition/Scholarly\ Ambition.ttf');
+  src: url('/fonts/ScholarlyAmbition/Scholarly\ Ambition.ttf');
 }
 
 :root {

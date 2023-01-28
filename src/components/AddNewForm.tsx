@@ -1,25 +1,35 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { NewRecordingInfo } from "../types";
 import "./AddNewForm.css";
 
-const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
+declare global{
+  interface Window {
+    __TAURI__: any;
+  }
+}
+
+interface AddNewFormProps {
+  addMethods: [(input: NewRecordingInfo) => void, (input: string) => void];
+  updating: [boolean, string];
+  hideForm: () => void;
+}
+
+export const AddNewResourceForm: React.FC<AddNewFormProps> = ({ addMethods, updating, hideForm }) => {
   const [isUpdating, updateResource] = updating;
   const [addNewCard, addNewDeck] = addMethods;
-  const [formFields, setFormFields] = useState({
+  const [formFields, setFormFields] = useState<NewRecordingInfo>({
     name: "",
     recordingFilePath: "",
   });
 
-  const onNameChange = (e) => {
+  const onNameChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormFields({ ...formFields, name: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    // e.preventDefault();
-
+  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = () => {
     switch (updateResource) {
       case "Deck":
-        addNewDeck({ name: formFields.name });
+        addNewDeck(formFields.name);
         break;
       case "Recording":
       case "Planned Recording":
@@ -51,13 +61,13 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
         directory: false,
         recursive: true,
       })
-      .then((p) => {
-        if (p) {
-          setFormFields({ ...formFields, recordingFilePath: p });
-          console.log("added to formFields: ", p);
+      .then((path: string) => {
+        if (path) {
+          setFormFields({ ...formFields, recordingFilePath: path });
+          console.log("added to formFields: ", path);
         }
       })
-      .catch((e) => console.log(e));
+      .catch(console.log);
   };
 
   const resourceDisplayName =
@@ -101,11 +111,3 @@ const AddNewResourceForm = ({ addMethods, updating, hideForm }) => {
     </section>
   );
 };
-
-AddNewResourceForm.propTypes = {
-  addMethods: PropTypes.arrayOf(PropTypes.func).isRequired,
-  updating: PropTypes.array.isRequired,
-  hideForm: PropTypes.func.isRequired,
-};
-
-export default AddNewResourceForm;

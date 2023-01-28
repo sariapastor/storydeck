@@ -1,35 +1,45 @@
-import PropTypes from "prop-types";
-import MediaDisplay from "./MediaDisplay";
-import TranscriptExcerptDisplay from "./TranscriptExcerptDisplay";
+import React from 'react';
+import { MediaDisplay } from "./MediaDisplay";
+import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import "./SingleCardDisplay.css";
+import { DBRecord, StoryDeck, Telling, Transcript, TranscriptStatus } from '../../types';
+import { ObjectIdExtended } from 'bson';
 
-const SingleCardDisplay = ({
+interface SingleCardDisplayProps {
+  card: Telling;
+  decks: StoryDeck[];
+  updateRecord: (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => void;
+  updateActive: (type: "deck" | "card" | "transcript", oid: ObjectIdExtended) => void;
+  newDeckFromCard: (card: Telling) => void;
+}
+
+export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
   card,
   decks,
   updateRecord,
   updateActive,
   newDeckFromCard,
 }) => {
-  const [transcript, setTranscript] = useState({});
+  const [transcript, setTranscript] = useState<Transcript | Omit<Transcript, '_id' | 'language' | 'text'>>({ lines: [{ line: '', startTime: 0, endTime: 0}]});
   const [mediaTime, setMediaTime] = useState(0);
 
   useEffect(() => {
     if (card.recording) {
       switch (card.recording.transcriptStatus) {
-        case "Complete":
-          invoke("query_transcripts", {
+        case TranscriptStatus.Complete:
+          invoke<string>("query_transcripts", {
             filter: { _id: card.recording.transcript },
           }).then((response) => {
             setTranscript(JSON.parse(response)[0]);
           });
           break;
-        case "Error":
-          setTranscript({ lines: [{ line: "Unable to transcribe" }] });
+        case TranscriptStatus.Error:
+          setTranscript({ lines: [{ line: "Unable to transcribe", startTime: 0, endTime: 0 }] });
           break;
-        case "Processing":
-          setTranscript({ lines: [{ line: "Transcript processing.." }] });
+        case TranscriptStatus.Processing:
+          setTranscript({ lines: [{ line: "Transcript processing..", startTime: 0, endTime: 0 }] });
           break;
         case undefined:
         default:
@@ -39,19 +49,19 @@ const SingleCardDisplay = ({
     }
   }, [card]);
 
-  const updateCard = (e) => {
+  const updateCard = (e: any) => {
     // e.preventDefault();
-    const attribute = e.target.className;
+    const attribute = (e.target as HTMLElement).className;
     const updatedCard = { ...card };
-    updatedCard[attribute] = e.target.textContent;
+    updatedCard[attribute as "name" | "description" | "notes"] = e.target.textContent;
     const isCommit = e.type === "blur";
-    const change = {};
-    change[attribute] = updatedCard[attribute];
+    const change: { [key: string]: string | undefined } = {};
+    change[attribute] = updatedCard[attribute as "name" | "description" | "notes"];
     updateRecord("card", updatedCard, change, isCommit);
   };
 
-  const updateRelatedDecks = (oid) => {
-    document.getElementById("deckPicker").classList.add("hidden");
+  const updateRelatedDecks = (oid: ObjectIdExtended) => {
+    document.getElementById("deckPicker")!.classList.add("hidden");
     const updatedCard = { ...card };
     updatedCard.decks.push(oid);
     const change = { decks: updatedCard.decks };
@@ -59,13 +69,13 @@ const SingleCardDisplay = ({
   };
 
   const showDeckPicker = () => {
-    document.getElementById("deckPicker").classList.remove("hidden");
+    document.getElementById("deckPicker")!.classList.remove("hidden");
   };
 
   return (
     <div className="card-expansion">
       <MediaDisplay recording={card.recording} setMediaTime={setMediaTime} />
-      <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />
+      {transcript && <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />}
       <section className="expanded-card-summary">
         <div id="deckPicker" className="deck-picker hidden">
           {decks
@@ -103,7 +113,7 @@ const SingleCardDisplay = ({
                 className="deck-link"
                 onClick={() => updateActive("deck", deck)}
               >
-                {decks.find((d) => d._id.$oid === deck.$oid).name}
+                {decks.find((d) => d._id.$oid === deck.$oid)!.name}
               </li>
             ))}
             <li onClick={showDeckPicker}>+ Add to another</li>
@@ -112,8 +122,9 @@ const SingleCardDisplay = ({
         <section className="view-buttons">
           <button
             onClick={() => {
-              updateActive("transcript", card.recording.transcript);
+              updateActive("transcript", card.recording.transcript!);
             }}
+            disabled={card.recording.transcript === undefined}
           >
             View full transcript
           </button>
@@ -123,43 +134,3 @@ const SingleCardDisplay = ({
     </div>
   );
 };
-
-SingleCardDisplay.propTypes = {
-  card: PropTypes.shape({
-    _id: PropTypes.shape({
-      $oid: PropTypes.string,
-    }).isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    notes: PropTypes.string,
-    tags: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.shape({
-          $oid: PropTypes.string,
-        }),
-        name: PropTypes.string,
-      })
-    ),
-    recording: PropTypes.shape({
-      _id: PropTypes.shape({
-        $oid: PropTypes.string,
-      }),
-      name: PropTypes.string,
-      filename: PropTypes.string,
-      transcriptStatus: PropTypes.string,
-      transcript: PropTypes.shape({
-        $oid: PropTypes.string,
-      }),
-    }),
-    decks: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.shape({
-          $oid: PropTypes.string,
-        }),
-      })
-    ),
-  }),
-  updateActive: PropTypes.func,
-};
-
-export default SingleCardDisplay;

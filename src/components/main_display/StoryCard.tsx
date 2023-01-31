@@ -11,7 +11,7 @@ interface StoryCardProps {
 export const StoryCard: React.FC<StoryCardProps> = ({ card, updateActive }) => {
   const summary = card.description ? card.description : "SOme text";
   const setToActive = () => updateActive("card", card._id);
-  const unflip = (e: any) => e.target.childNodes[0].classList.add("resetting");
+  const unflip = (e: any) => e.target.childNodes[0].classList.add("resetting"); //eslint-disable-line @typescript-eslint/no-explicit-any
   const resetDone: React.AnimationEventHandler<HTMLDivElement> = (e) => {
     if (e.animationName === "reversetapeflip") {
       (e.target as HTMLDivElement).classList.remove("resetting");

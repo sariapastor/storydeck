@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { invoke } from "@tauri-apps/api";
+import { ObjectIdExtended } from 'bson';
+
 import { MediaDisplay } from "./MediaDisplay";
 import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
-import { invoke } from "@tauri-apps/api";
-import { useEffect, useState } from "react";
 import "./SingleCardDisplay.css";
 import { DBRecord, StoryDeck, Telling, Transcript, TranscriptStatus } from '../../types';
-import { ObjectIdExtended } from 'bson';
 
 interface SingleCardDisplayProps {
   card: Telling;
@@ -49,7 +49,7 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
     }
   }, [card]);
 
-  const updateCard = (e: any) => {
+  const updateCard = (e: any) => { //eslint-disable-line @typescript-eslint/no-explicit-any
     // e.preventDefault();
     const attribute = (e.target as HTMLElement).className;
     const updatedCard = { ...card };
@@ -80,8 +80,8 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
         <div id="deckPicker" className="deck-picker hidden">
           {decks
             .filter((d) => !card.decks.some((cd) => cd.$oid === d._id.$oid))
-            .map((d) => (
-              <div onClick={() => updateRelatedDecks(d._id)}>{d.name}</div>
+            .map((d, index) => (
+              <div key={index} onClick={() => updateRelatedDecks(d._id)}>{d.name}</div>
             ))}
           <div onClick={() => newDeckFromCard(card)}>
             + create new collection
@@ -108,9 +108,10 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
         <section className="related">
           <h4>related collections</h4>
           <ul>
-            {card.decks.map((deck) => (
+            {card.decks.map((deck, index) => (
               <li
                 className="deck-link"
+                key={index}
                 onClick={() => updateActive("deck", deck)}
               >
                 {decks.find((d) => d._id.$oid === deck.$oid)!.name}

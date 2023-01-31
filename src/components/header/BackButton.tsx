@@ -1,8 +1,9 @@
 import React from 'react';
+import { ViewState } from '../../types';
 
 interface BackButtonProps {
-  viewStack: any[];
-  setViewStack: React.Dispatch<React.SetStateAction<any[]>>;
+  viewStack: ViewState[];
+  setViewStack: React.Dispatch<React.SetStateAction<ViewState[]>>;
 }
 
 export const BackButton: React.FC<BackButtonProps> = ({ viewStack, setViewStack }) => {

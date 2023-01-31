@@ -6,7 +6,7 @@ enum menuItems {
   DECK = "+ New Collection",
 };
 
-export const NewButton: React.FC<{setUpdating: any}> = ({ setUpdating }) => {
+export const NewButton: React.FC<{setUpdating: React.Dispatch<React.SetStateAction<[boolean, string]>>}> = ({ setUpdating }) => {
   const showForm: React.MouseEventHandler<HTMLLIElement> = (e) => {
     let payload = "";
     switch ((e.target as HTMLLIElement).textContent) {

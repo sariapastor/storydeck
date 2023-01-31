@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 
 import { invoke } from "@tauri-apps/api";
-import { useEffect, useState } from "react";
 import { appWindow } from "@tauri-apps/api/window";
+import { ObjectIdExtended } from 'bson';
+
 import { Header } from "./components/Header";
 import { MainDisplay } from "./components/MainDisplay";
 import { AddNewResourceForm } from "./components/AddNewForm";
 import "./App.css";
 import { DBRecord, NewRecordingInfo, StoryDeck, Telling, ViewState } from "./types";
-import { ObjectIdExtended } from 'bson';
 
 function App(): JSX.Element {
   const [cards, setCards] = useState<Telling[]>([]);
@@ -98,15 +98,16 @@ function App(): JSX.Element {
 
   const updateRecord = (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => {
     console.log(type, change, isCommit);
+    let updatedCards, updatedDecks;
     switch (type) {
       case "card":
-        const updatedCards = cards.map((card) =>
+        updatedCards = cards.map((card) =>
           card._id.$oid === record._id.$oid ? record as Telling : card
         );
         setCards(updatedCards);
         break;
       case "deck":
-        const updatedDecks = decks.map((deck) =>
+        updatedDecks = decks.map((deck) =>
           deck._id.$oid === record._id.$oid ? record as StoryDeck : deck
         );
         setDecks(updatedDecks);

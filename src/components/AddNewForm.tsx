@@ -4,7 +4,7 @@ import "./AddNewForm.css";
 
 declare global{
   interface Window {
-    __TAURI__: any;
+    __TAURI__: any; //eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 

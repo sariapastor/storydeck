@@ -15,7 +15,7 @@ export const FullTranscriptView: React.FC<FullTranscriptViewProps> = ({ transcri
   const [transcript, setTranscript] = useState<Transcript | { text: "Loading transcript.." }>({
     text: "Loading transcript.."
   });
-  const updateRecording = (e: any) => {
+  const updateRecording = (e: any) => { //eslint-disable-line @typescript-eslint/no-explicit-any
     const attribute = (e.target as HTMLElement).className;
     const updatedCard = { ...card };
     updatedCard.recording[attribute as "name" | "filename"] = e.target.textContent;

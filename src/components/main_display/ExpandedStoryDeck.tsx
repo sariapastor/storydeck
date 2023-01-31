@@ -18,7 +18,7 @@ export const ExpandedStoryDeck: React.FC<StoryDeckProps> = ({ deck, updateActive
 
   const summary = deck.description ? deck.description : "Add description";
 
-  const updateDeck = (e: any) => {
+  const updateDeck = (e: any) => { //eslint-disable-line @typescript-eslint/no-explicit-any
     const attribute = (e.target as HTMLElement).className;
     const updatedDeck = { ...deck };
     updatedDeck[attribute as "name" | "description" | "notes"] = e.target.textContent;

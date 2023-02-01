@@ -4,8 +4,10 @@ import { ObjectIdExtended } from 'bson';
 
 import { MediaDisplay } from "./MediaDisplay";
 import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
-import "./SingleCardDisplay.css";
+import { ErrorBoundary } from '../ErrorBoundary';
 import { DBRecord, StoryDeck, Telling, Transcript, TranscriptStatus } from '../../types';
+import "./SingleCardDisplay.css";
+
 
 interface SingleCardDisplayProps {
   card: Telling;
@@ -74,8 +76,12 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
 
   return (
     <div className="card-expansion">
-      <MediaDisplay recording={card.recording} setMediaTime={setMediaTime} />
-      {transcript && <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />}
+      <ErrorBoundary feature='Media Display'>
+        <>
+          <MediaDisplay recording={card.recording} setMediaTime={setMediaTime} />
+          {transcript && <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />}
+        </>
+      </ErrorBoundary>
       <section className="expanded-card-summary">
         <div id="deckPicker" className="deck-picker hidden">
           {decks

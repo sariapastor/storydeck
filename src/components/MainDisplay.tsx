@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { ErrorBoundary } from './ErrorBoundary';
 import { StoryDeckIcon } from "./main_display/StoryDeck";
 import { SingleCardDisplay } from "./main_display/SingleCardDisplay";
 import { ExpandedStoryDeck } from "./main_display/ExpandedStoryDeck";
@@ -25,21 +26,24 @@ export const MainDisplay: React.FC<MainDisplayProps> = ({
   updateActive,
   newDeckFromCard,
 }) => {
-  console.log("currentView: ", currentView);
+  console.info("currentView: ", currentView);
 
   switch (currentView.view) {
     case "loading":
       return <h2>Loading...</h2>;
     case "single-deck":
       return (
-        <ExpandedStoryDeck
-          deck={decks.find((d) => d._id.$oid === currentView.activeDeck!.$oid)!}
-          updateActive={updateActive}
-          updateRecord={updateRecord}
-        />
+        <ErrorBoundary feature='Collection View'>
+          <ExpandedStoryDeck
+            deck={decks.find((d) => d._id.$oid === currentView.activeDeck!.$oid)!}
+            updateActive={updateActive}
+            updateRecord={updateRecord}
+          />
+        </ErrorBoundary>
       );
     case "single-card":
       return (
+        <ErrorBoundary feature='Recording View'>
         <SingleCardDisplay
           card={cards.find((c) => c._id.$oid === currentView.activeCard!.$oid)!}
           decks={decks}
@@ -47,23 +51,28 @@ export const MainDisplay: React.FC<MainDisplayProps> = ({
           updateActive={updateActive}
           newDeckFromCard={newDeckFromCard}
         />
-      );
+        </ErrorBoundary>
+        );
     case "full-transcript":
       return (
+        <ErrorBoundary feature='Transcript View'>
         <FullTranscriptView
           transcriptId={currentView.activeTranscript!}
           card={cards.find((c) => c._id.$oid === currentView.activeCard!.$oid)!}
           updateRecord={updateRecord}
         />
-      );
+        </ErrorBoundary>
+        );
     case "decks-overview":
     default:
       return (
-        <section className="collections-layout">
-          {decks.map((deck, index) => (
-            <StoryDeckIcon key={index} deck={deck} updateActive={updateActive} />
-          ))}
-        </section>
+        <ErrorBoundary feature='Collections Overview'>
+          <section className="collections-layout">
+            {decks.map((deck, index) => (
+              <StoryDeckIcon key={index} deck={deck} updateActive={updateActive} />
+            ))}
+          </section>
+        </ErrorBoundary>
       );
   }
 };

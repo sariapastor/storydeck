@@ -9,6 +9,7 @@ import { MainDisplay } from "./components/MainDisplay";
 import { AddNewResourceForm } from "./components/AddNewForm";
 import "./App.css";
 import { DBRecord, NewRecordingInfo, StoryDeck, Telling, ViewState } from "./types";
+import { NavigationContextProvider } from "./context/navcontext";
 
 function App(): JSX.Element {
   const [cards, setCards] = useState<Telling[]>([]);
@@ -155,12 +156,10 @@ function App(): JSX.Element {
   });
 
   return (
-    <>
+    <NavigationContextProvider view='loading'>
       <Header
         title="Story Deck"
         setUpdating={setUpdating}
-        viewStack={viewStack}
-        setViewStack={setViewStack}
       />
       <main>
         <AddNewResourceForm
@@ -177,7 +176,7 @@ function App(): JSX.Element {
           newDeckFromCard={newDeckFromCard}
         />
       </main>
-    </>
+    </NavigationContextProvider>
   );
 }
 

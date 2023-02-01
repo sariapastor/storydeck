@@ -6,18 +6,17 @@ import { ObjectIdExtended } from 'bson';
 
 import { Header } from "./components/Header";
 import { MainDisplay } from "./components/MainDisplay";
-import { AddNewResourceForm } from "./components/AddNewForm";
+import { AddNewResourceForm } from "./components/AddNewResourceForm";
 import "./App.css";
 import { DBRecord, NewRecordingInfo, StoryDeck, Telling, ViewState } from "./types";
-import { NavigationContextProvider } from "./context/navcontext";
+import { NavigationContextProvider, useNavigation } from "./context/navcontext";
 
 function App(): JSX.Element {
   const [cards, setCards] = useState<Telling[]>([]);
   const [decks, setDecks] = useState<StoryDeck[]>([]);
   const [updating, setUpdating] = useState<[boolean, string]>([false, ""]);
-  const [viewStack, setViewStack] = useState<ViewState[]>([ { view: "loading" } ]);
 
-  const hideForm = (): void => setUpdating([false, ""]);
+  const { viewStack, position, add } = useNavigation();
 
   const addNewCard = ({ name, recordingFilePath }: NewRecordingInfo) => {
     hideForm();
@@ -164,11 +163,11 @@ function App(): JSX.Element {
       <main>
         <AddNewResourceForm
           addMethods={[addNewCard, addNewDeck]}
-          hideForm={hideForm}
+          hideForm={() => setUpdating([false, ""])}
           updating={updating}
         />
         <MainDisplay
-          currentView={viewStack[viewStack.length - 1]}
+          currentView={viewStack[position]}
           decks={decks}
           cards={cards}
           updateRecord={updateRecord}

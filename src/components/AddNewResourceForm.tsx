@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { NewRecordingInfo } from "../types";
-import "./AddNewForm.css";
+import "./AddNewResourceForm.css";
 
 declare global{
   interface Window {
@@ -8,32 +9,34 @@ declare global{
   }
 }
 
-interface AddNewFormProps {
+interface AddNewResourceFormProps {
   addMethods: [(input: NewRecordingInfo) => void, (input: string) => void];
   updating: [boolean, string];
   hideForm: () => void;
 }
 
-export const AddNewResourceForm: React.FC<AddNewFormProps> = ({ addMethods, updating, hideForm }) => {
-  const [isUpdating, updateResource] = updating;
-  const [addNewCard, addNewDeck] = addMethods;
+export const AddNewResourceForm: React.FC<AddNewResourceFormProps> = ({ addMethods, updating, hideForm }) => {
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<NewRecordingInfo>();
   const [formFields, setFormFields] = useState<NewRecordingInfo>({
     name: "",
     recordingFilePath: "",
   });
 
+  const [isUpdating, updateResource] = updating;
+  const [addNewCard, addNewDeck] = addMethods;
+
   const onNameChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setFormFields({ ...formFields, name: e.target.value });
   };
 
-  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = () => {
+  const onSubmit: SubmitHandler<NewRecordingInfo> = (data) => {
     switch (updateResource) {
       case "Deck":
-        addNewDeck(formFields.name);
+        addNewDeck(data.name);
         break;
       case "Recording":
       case "Planned Recording":
-        addNewCard(formFields);
+        addNewCard(data);
         break;
       default:
         console.log(`resource name "${updateResource}" not recognized`);
@@ -79,16 +82,19 @@ export const AddNewResourceForm: React.FC<AddNewFormProps> = ({ addMethods, upda
         <button className="close" onClick={cancelAdd}>
           ✖
         </button>
-        <div className="fields">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* <div className="fields"> */}
           <div className="name-field">
             <label htmlFor="name">
               Name for new {resourceDisplayName.toLowerCase()}:
             </label>
             {/* <br /> */}
             <input
-              name="name"
-              value={formFields.name}
-              onChange={onNameChange}
+              // name="name"
+              {...register("name")}
+              // value={formFields.name}
+              // onChange={onNameChange}
+
             />
           </div>
           <div
@@ -96,17 +102,15 @@ export const AddNewResourceForm: React.FC<AddNewFormProps> = ({ addMethods, upda
               updateResource === "Recording" ? "active-field" : "hidden-field"
             }`}
           >
+            <input type="file" {...register("recordingFilePath")} />
             <button onClick={createDialog}>Choose File</button>
             <div className="filename-display">
-              {formFields.recordingFilePath.split("/").pop()}
+              {/* {formFields.recordingFilePath.split("/").pop()} */}
+              {watch("recordingFilePath")}
             </div>
           </div>
-        </div>
-        <button className="sub" onClick={handleSubmit}>
-          Add New {resourceDisplayName}
-        </button>
-        {/* <input type="submit" value={`Add New ${updateResource}`} /> */}
-        {/* </form> */}
+          <input type="submit" value={`Add New ${updateResource}`} />
+        </form>
       </section>
     </section>
   );

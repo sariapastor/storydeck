@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { invoke } from "@tauri-apps/api";
+import { useDeck, useNavigation } from "../../context";
 import "./FullTranscriptView.css";
 
-import { ObjectIdExtended } from 'bson';
-import { DBRecord, Telling, Transcript } from '../../types';
+export const FullTranscriptView: React.FC = () => {
+  const { cards, transcript, loadTranscript, updateResource } = useDeck();
+  const { viewStack, position } = useNavigation();
 
-interface FullTranscriptViewProps {
-  transcriptId: ObjectIdExtended;
-  card: Telling;
-  updateRecord: (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => void;
-}
+  const card = cards.find(c => c._id === viewStack[position].activeCard)!
 
-export const FullTranscriptView: React.FC<FullTranscriptViewProps> = ({ transcriptId, card, updateRecord }) => {
-  const [transcript, setTranscript] = useState<Transcript | { text: "Loading transcript.." }>({
-    text: "Loading transcript.."
-  });
   const updateRecording = (e: any) => { //eslint-disable-line @typescript-eslint/no-explicit-any
     const attribute = (e.target as HTMLElement).className;
     const updatedCard = { ...card };
@@ -30,19 +24,15 @@ export const FullTranscriptView: React.FC<FullTranscriptViewProps> = ({ transcri
         recordingId: card.recording._id,
         filename: e.target.textContent,
       })
-        .then(() => updateRecord("card", updatedCard, change, isCommit))
+        .then(() => updateResource("card", updatedCard._id, change))
         .catch(console.log);
     } else {
-      updateRecord("card", updatedCard, change, isCommit);
+      // updateResource("card", updatedCard._id, change);
+      console.log("handle change", change)
     }
   };
-  useEffect(() => {
-    invoke<string>("query_transcripts", {
-      filter: { _id: transcriptId },
-    }).then((response) => {
-      setTranscript(JSON.parse(response)[0]);
-    });
-  }, [transcriptId]);
+  if (!transcript) { loadTranscript(card.recording.transcript!); }
+
   return (
     <section className="full-text">
       <h2
@@ -61,7 +51,7 @@ export const FullTranscriptView: React.FC<FullTranscriptViewProps> = ({ transcri
       >
         {card.recording.filename}
       </h2>
-      <p>{transcript.text}</p>
+      <p>{transcript?.text}</p>
     </section>
   );
 };

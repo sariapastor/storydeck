@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactWaves from "@dschoon/react-waves";
 import { documentDir, join } from "@tauri-apps/api/path";
-import "./MediaDisplay.css";
 import { Recording } from '../../types';
+import "./MediaDisplay.css";
+
 
 interface MediaDisplayProps {
   recording: Recording;
@@ -37,7 +38,7 @@ export const MediaDisplay: React.FC<MediaDisplayProps> = ({ recording, setMediaT
         const pathString: string = await join(await documentDir(), "storydeck", recording.filename);
         const assetUrl = "asset://" + pathString;
         const blobUrl = await recordingBlobUrlFromAssetUrl(assetUrl);
-        blobUrl ? setFile(blobUrl): console.log('error getting blob from input');
+        blobUrl ? setFile(blobUrl) : console.log('error getting blob from input');
         setLoaded(true);
       })()
     }
@@ -50,6 +51,7 @@ export const MediaDisplay: React.FC<MediaDisplayProps> = ({ recording, setMediaT
           <div className="play button" onClick={() => setPlaying(!playing)}>
             {playing ? "■" : "▶"}
           </div>
+
           <ReactWaves
             audioFile={file}
             className={"react-waves"}
@@ -72,6 +74,7 @@ export const MediaDisplay: React.FC<MediaDisplayProps> = ({ recording, setMediaT
       ) : (
         <div className="placeholder">Loading media..</div>
       )}
+      <div id='waveform'></div>
     </section>
   );
 };

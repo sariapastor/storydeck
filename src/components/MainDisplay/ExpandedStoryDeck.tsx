@@ -1,19 +1,15 @@
 import React from 'react';
-
 import { StoryCard } from "./StoryCard";
+import { useDeck, useNavigation } from '../../context';
 import "./ExpandedStoryDeck.css";
-import { ObjectIdExtended } from 'bson';
-import { DBRecord, StoryDeck } from '../../types';
 
-interface StoryDeckProps {
-  deck: StoryDeck;
-  updateActive: (type: "deck" | "card" | "transcript", oid: ObjectIdExtended) => void;
-  updateRecord: (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => void;
-}
+export const ExpandedStoryDeck: React.FC = () => {
+  const { decks, setActive, updateResource } = useDeck();
+  const { viewStack, position } = useNavigation();
 
-export const ExpandedStoryDeck: React.FC<StoryDeckProps> = ({ deck, updateActive, updateRecord }) => {
+  const deck = decks.find(d => d._id === viewStack[position].activeDeck)!
   const cardComponents = deck.cards.map((card, index) => (
-    <StoryCard key={index} card={card} updateActive={updateActive} />
+    <StoryCard key={index} card={card} updateActive={setActive} />
   ));
 
   const summary = deck.description ? deck.description : "Add description";
@@ -25,7 +21,7 @@ export const ExpandedStoryDeck: React.FC<StoryDeckProps> = ({ deck, updateActive
     const isCommit = e.type === "blur";
     const change: {[key: string]: string | undefined} = {};
     change[attribute] = updatedDeck[attribute as "name" | "description" | "notes"];
-    updateRecord("deck", updatedDeck, change, isCommit);
+    if (isCommit) { updateResource("deck", updatedDeck._id, change); }
   };
 
   return (

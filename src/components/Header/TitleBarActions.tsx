@@ -1,13 +1,15 @@
 import React from 'react';
+import { useDeck } from '../../context';
 
 enum menuItem {
-  TELLING = "Recording",
-  TEMPLATE = "Planned Recording",
-  DECK = "Deck",
+  TELLING = "recording",
+  TEMPLATE = "plan",
+  DECK = "collection",
 };
 
-export const TitleBarActions: React.FC<{setUpdating: React.Dispatch<React.SetStateAction<[boolean, string]>>}> = ({ setUpdating }) => {
-  const showForm = (payload: menuItem) => setUpdating([true, payload]);
+export const TitleBarActions: React.FC = () => {
+  const { showForm } = useDeck();
+  // const showForm = (payload: menuItem) => setUpdating([true, payload]);
   return (
     <div className="actions">
       <button onClick={() => showForm(menuItem.TELLING)}>📼</button>

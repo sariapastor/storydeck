@@ -5,10 +5,10 @@ import "./Header.css";
 
 interface HeaderProps {
   title: string;
-  setUpdating: React.Dispatch<React.SetStateAction<[boolean, string]>>;
+//   setUpdating: React.Dispatch<React.SetStateAction<[boolean, string]>>;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, setUpdating }) => {
+export const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
     <header>
       <div data-tauri-drag-region className="titlebar">
@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ title, setUpdating }) => {
         <div className="window-title">
           <h3>{title}</h3>
         </div>
-        <TitleBarActions setUpdating={setUpdating} />
+        <TitleBarActions />
       </div>
       <div className="titlebar-spacer"></div>
     </header>

@@ -4,44 +4,30 @@ import { ObjectIdExtended } from 'bson';
 
 import { MediaDisplay } from "./MediaDisplay";
 import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
-import { ErrorBoundary } from '../ErrorBoundary';
-import { DBRecord, StoryDeck, Telling, Transcript, TranscriptStatus } from '../../types';
+import { ErrorBoundary } from '../ErrorBounds';
+import { StoryDeck, Telling, TranscriptStatus } from '../../types';
+import { useDeck, useNavigation } from '../../context';
 import "./SingleCardDisplay.css";
 
-
-interface SingleCardDisplayProps {
-  card: Telling;
-  decks: StoryDeck[];
-  updateRecord: (type: "card" | "deck" | "transcript", record: DBRecord, change: Partial<DBRecord>, isCommit: boolean) => void;
-  updateActive: (type: "deck" | "card" | "transcript", oid: ObjectIdExtended) => void;
-  newDeckFromCard: (card: Telling) => void;
-}
-
-export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
-  card,
-  decks,
-  updateRecord,
-  updateActive,
-  newDeckFromCard,
-}) => {
-  const [transcript, setTranscript] = useState<Transcript | Omit<Transcript, '_id' | 'language' | 'text'>>({ lines: [{ line: '', startTime: 0, endTime: 0}]});
+export const SingleCardDisplay: React.FC = () => {
+  const { viewStack, position } = useNavigation();
+  const { cards, decks, transcript, loadCardsAndDecks, loadTranscript, setActive, updateResource } = useDeck();
   const [mediaTime, setMediaTime] = useState(0);
+  
+  const card = cards.find(c => c._id === viewStack[position].activeCard)!;
 
+  let transcriptStatusMsg;
   useEffect(() => {
     if (card.recording) {
       switch (card.recording.transcriptStatus) {
         case TranscriptStatus.Complete:
-          invoke<string>("query_transcripts", {
-            filter: { _id: card.recording.transcript },
-          }).then((response) => {
-            setTranscript(JSON.parse(response)[0]);
-          });
+          loadTranscript(card.recording.transcript!);
           break;
         case TranscriptStatus.Error:
-          setTranscript({ lines: [{ line: "Unable to transcribe", startTime: 0, endTime: 0 }] });
+          transcriptStatusMsg = "Error on attempt to transcribe";
           break;
         case TranscriptStatus.Processing:
-          setTranscript({ lines: [{ line: "Transcript processing..", startTime: 0, endTime: 0 }] });
+          transcriptStatusMsg = "Transcript processing..";
           break;
         case undefined:
         default:
@@ -50,6 +36,17 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
       }
     }
   }, [card]);
+  
+  const newDeckFromCard = async (card: Telling) => {
+    const newDeck: StoryDeck = JSON.parse(await invoke<string>("create_story_deck", { name: "untitled collection" }));
+    newDeck.cards = [card];
+    const updatedCard = { ...card };
+    updatedCard.decks.push(newDeck._id);
+    loadCardsAndDecks({newDeck});
+    setActive("deck", newDeck._id);
+    await updateResource("card", updatedCard._id, { decks: updatedCard.decks });
+    loadCardsAndDecks().catch(console.log);
+  };
 
   const updateCard = (e: any) => { //eslint-disable-line @typescript-eslint/no-explicit-any
     // e.preventDefault();
@@ -59,7 +56,7 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
     const isCommit = e.type === "blur";
     const change: { [key: string]: string | undefined } = {};
     change[attribute] = updatedCard[attribute as "name" | "description" | "notes"];
-    updateRecord("card", updatedCard, change, isCommit);
+    if (isCommit) { updateResource("card", updatedCard._id, change); }
   };
 
   const updateRelatedDecks = (oid: ObjectIdExtended) => {
@@ -67,7 +64,7 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
     const updatedCard = { ...card };
     updatedCard.decks.push(oid);
     const change = { decks: updatedCard.decks };
-    updateRecord("card", updatedCard, change, true);
+    updateResource("card", updatedCard._id, change);
   };
 
   const showDeckPicker = () => {
@@ -76,10 +73,10 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
 
   return (
     <div className="card-expansion">
-      <ErrorBoundary feature='Media Display'>
+      <ErrorBoundary name='Media Display'>
         <>
           <MediaDisplay recording={card.recording} setMediaTime={setMediaTime} />
-          {transcript && <TranscriptExcerptDisplay transcript={transcript} mediaTime={mediaTime} />}
+          {transcript ? <TranscriptExcerptDisplay mediaTime={mediaTime} /> : transcriptStatusMsg}
         </>
       </ErrorBoundary>
       <section className="expanded-card-summary">
@@ -118,7 +115,7 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
               <li
                 className="deck-link"
                 key={index}
-                onClick={() => updateActive("deck", deck)}
+                onClick={() => setActive("deck", deck)}
               >
                 {decks.find((d) => d._id.$oid === deck.$oid)!.name}
               </li>
@@ -129,7 +126,7 @@ export const SingleCardDisplay: React.FC<SingleCardDisplayProps> = ({
         <section className="view-buttons">
           <button
             onClick={() => {
-              updateActive("transcript", card.recording.transcript!);
+              setActive("transcript", card.recording.transcript!);
             }}
             disabled={card.recording.transcript === undefined}
           >

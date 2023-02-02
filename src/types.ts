@@ -73,10 +73,11 @@ export interface StoryDeck {
 }
 
 export interface ViewState {
-    view: "loading" | "single-card" | "single-deck" | "decks-overview" | "full-transcript";
+    view: "loading" | "single-card" | "single-deck" | "decks-overview" | "full-transcript" | "form";
     activeDeck?: ObjectIdExtended;
     activeCard?: ObjectIdExtended;
     activeTranscript?: ObjectIdExtended;
+    activeForm?: "recording" | "collection";
 }
 
-export type DBRecord = Telling | StoryDeck | Transcript | Person | Tag;
+export type DbRecord = Telling | StoryDeck | Transcript | Person | Tag;

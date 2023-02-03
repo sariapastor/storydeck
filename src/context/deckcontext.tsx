@@ -70,7 +70,7 @@ const getCardsAndDecks = async (): Promise<[Telling[], StoryDeck[]]> => {
     let decks: StoryDeck[] = [];
     try {
       const response = await invoke<string>("query_cards_and_decks", {});
-      const [dbCards, dbDecks]: [Telling[], StoryDeck[]] = JSON.parse(response);
+      const [dbCards, dbDecks]: [Telling[], Omit<StoryDeck, "cards">[]] = JSON.parse(response);
       const processedDecks = dbDecks.map((deck) => {
         const deckCards = dbCards.filter((card) =>
           card.decks.map((oid) => oid.$oid).includes(deck._id.$oid)

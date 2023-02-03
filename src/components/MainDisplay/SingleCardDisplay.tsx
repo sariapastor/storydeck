@@ -14,7 +14,7 @@ export const SingleCardDisplay: React.FC = () => {
   const { cards, decks, transcript, loadCardsAndDecks, loadTranscript, setActive, updateResource } = useDeck();
   const [mediaTime, setMediaTime] = useState(0);
   
-  const card = cards.find(c => c._id === viewStack[position].activeCard)!;
+  const card = cards.find(c => c._id.$oid === viewStack[position].activeCard?.$oid)!;
 
   let transcriptStatusMsg;
   useEffect(() => {

@@ -7,7 +7,7 @@ export const ExpandedStoryDeck: React.FC = () => {
   const { decks, setActive, updateResource } = useDeck();
   const { viewStack, position } = useNavigation();
 
-  const deck = decks.find(d => d._id === viewStack[position].activeDeck)!
+  const deck = decks.find(d => d._id.$oid === viewStack[position].activeDeck?.$oid)!
   const cardComponents = deck.cards.map((card, index) => (
     <StoryCard key={index} card={card} updateActive={setActive} />
   ));

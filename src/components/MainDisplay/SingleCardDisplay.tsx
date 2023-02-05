@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { invoke } from "@tauri-apps/api";
 import { ObjectIdExtended } from 'bson';
+import { useForm } from 'react-hook-form';
 
 import { MediaDisplay } from "./MediaDisplay";
 import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
 import { ErrorBoundary } from '../ErrorBounds';
 import { StoryDeck, Telling, TranscriptStatus } from '../../types';
 import { useDeck, useNavigation } from '../../context';
-import "./SingleCardDisplay.css";
+import "./SingleCardDisplay.scss";
 
 export const SingleCardDisplay: React.FC = () => {
   const { viewStack, position } = useNavigation();
@@ -15,6 +16,7 @@ export const SingleCardDisplay: React.FC = () => {
   const [mediaTime, setMediaTime] = useState(0);
   
   const card = cards.find(c => c._id.$oid === viewStack[position].activeCard?.$oid)!;
+  const { register, watch } = useForm<{cardName: string; cardDescription?: string;}>({ defaultValues: { cardName: card.name, cardDescription: card.description } });
 
   let transcriptStatusMsg;
   useEffect(() => {
@@ -48,23 +50,18 @@ export const SingleCardDisplay: React.FC = () => {
     loadCardsAndDecks().catch(console.log);
   };
 
-  const updateCard = (e: any) => { //eslint-disable-line @typescript-eslint/no-explicit-any
-    // e.preventDefault();
-    const attribute = (e.target as HTMLElement).className;
-    const updatedCard = { ...card };
-    updatedCard[attribute as "name" | "description" | "notes"] = e.target.textContent;
-    const isCommit = e.type === "blur";
+  const updateCard = (e: SyntheticEvent) => { 
+    const attribute = (e.target as HTMLElement).id as "name" | "description" | "notes";
     const change: { [key: string]: string | undefined } = {};
-    change[attribute] = updatedCard[attribute as "name" | "description" | "notes"];
-    if (isCommit) { updateResource("card", updatedCard._id, change); }
+    change[attribute] = (e.target as HTMLInputElement).value;
+    if (change[attribute] !== card[attribute]) { updateResource("card", card._id, change); }
   };
 
   const updateRelatedDecks = (oid: ObjectIdExtended) => {
     document.getElementById("deckPicker")!.classList.add("hidden");
-    const updatedCard = { ...card };
-    updatedCard.decks.push(oid);
-    const change = { decks: updatedCard.decks };
-    updateResource("card", updatedCard._id, change);
+    const updatedDeckList = [ ...card.decks, oid ];
+    const change = { decks: updatedDeckList };
+    updateResource("card", card._id, change);
   };
 
   const showDeckPicker = () => {
@@ -91,22 +88,17 @@ export const SingleCardDisplay: React.FC = () => {
           </div>
         </div>
         <section className="overview">
-          <h2
-            className="name"
-            contentEditable={true}
-            onChange={updateCard}
-            onBlur={updateCard}
+          <input
+            id="name"
+            className="h2"
+            { ...register("cardName", { onBlur: updateCard }) }
+          />
+          <textarea
+            id="description"
+            { ...register("cardDescription", { onBlur: updateCard }) }
           >
-            {card.name}
-          </h2>
-          <p
-            className="description"
-            contentEditable={true}
-            onChange={updateCard}
-            onBlur={updateCard}
-          >
-            {card.description}
-          </p>
+            { watch("cardDescription") }
+          </textarea>
         </section>
         <section className="related">
           <h4>related collections</h4>

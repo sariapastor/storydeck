@@ -1,0 +1,22 @@
+.full-text {
+  width: 80vw;
+  margin: auto;
+
+  input {
+    border: none;
+    background-color: var(--bg-color);
+  }
+
+  input:hover,
+  input:focus {
+    border: 2px solid gray;
+  }
+
+  input.h2 {
+    font-family: 'scholarly-ambition';
+  }
+
+  p {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}

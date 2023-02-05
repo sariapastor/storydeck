@@ -1,0 +1,39 @@
+.deck-expansion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.expanded-deck-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  input {
+    border: none;
+    background-color: var(--bg-color);
+  }
+
+  input.h2 {
+    font-family: 'oddly-calming';
+    font-size: large;
+  }
+
+  input.p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: italic;
+    margin-bottom: 3vw;
+  }
+
+  input:hover,
+  input:focus {
+    border: 2px solid gray;
+  }
+}
+
+.deck-cards-layout {
+  width: 90vw;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}

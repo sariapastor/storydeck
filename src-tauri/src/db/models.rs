@@ -1,12 +1,34 @@
-use serde::{Serialize, Deserialize};
-use mongodb::bson::oid::ObjectId;
 use super::docs::*;
+use leopard::LeopardWord;
+use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct TranscriptWord {
+    pub word: String,
+    pub start_time: f32,
+    pub end_time: f32,
+    pub confidence: f32,
+}
+
+impl From<&LeopardWord> for TranscriptWord {
+    fn from(value: &LeopardWord) -> Self {
+        TranscriptWord {
+            word: value.word.clone(),
+            start_time: value.start_sec,
+            end_time: value.end_sec,
+            confidence: value.confidence,
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum StoryCard {
     Template(Plan),
-    Telling(Take)
+    Telling(Take),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -22,57 +44,50 @@ pub struct Plan {
 }
 
 impl Plan {
-    // TODO: Refactor these into one method
     pub fn people(&self) -> Vec<&Person> {
-        self.planned_recordings.iter()
+        self.planned_recordings
+            .iter()
             .filter(|pr| pr.people.is_some())
             .flat_map(|pr| pr.people.as_ref().unwrap().iter())
             .collect()
     }
-    
+
     pub fn places(&self) -> Vec<&Location> {
-        self.planned_recordings.iter()
+        self.planned_recordings
+            .iter()
             .filter(|pr| pr.places.is_some())
             .flat_map(|pr| pr.places.as_ref().unwrap().iter())
             .collect()
     }
 }
 
-// #[skip_serializing_none]
+#[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Take {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub name: String,
     pub decks: Vec<ObjectId>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub people: Option<Vec<Person>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub places: Option<Vec<Location>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<Tag>>,
     pub recording: Recording,
 }
 
+#[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct StoryDeck {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<Tag>>,
 }
 
 impl StoryDeck {
-
     pub fn from_name(name: &str) -> Self {
         StoryDeck {
             id: ObjectId::new(),
@@ -80,7 +95,7 @@ impl StoryDeck {
             // cards: Vec::new(),
             description: None,
             notes: None,
-            tags: None
+            tags: None,
         }
     }
 }
@@ -88,8 +103,9 @@ impl StoryDeck {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Transcript {
     #[serde(rename = "_id")]
-    pub id: ObjectId,    
+    pub id: ObjectId,
     pub language: String,
     pub text: String,
     pub lines: Vec<Line>,
+    pub words: Vec<TranscriptWord>,
 }

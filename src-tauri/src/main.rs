@@ -37,7 +37,7 @@ async fn create_story_card(
 async fn create_transcript(
   file_path: String, card_id: ObjectId, state: tauri::State<'_, AppState>
 ) -> Result<String, String> {
-  let config = transcriber::Config::from_path(file_path).expect("failed to make transcriber config"); 
+  let config = transcriber::Config::new(file_path, None).expect("failed to make transcriber config"); 
   match transcriber::transcribe_and_split(config) {
     Ok(transcript_result) => {
       println!("transcript completed");

@@ -40,10 +40,10 @@ pub async fn create_story_card(
 }
 
 pub async fn create_transcript(
-    db: &Database, transcript: (String, Vec<Line>), card_id: ObjectId
+    db: &Database, transcript: (String, Vec<Line>, Vec<TranscriptWord>), card_id: ObjectId
 ) -> MdbResult<Transcript> {
     let transcript_id = ObjectId::new();
-    let new_transcript = Transcript { id: transcript_id, language: String::from("english"), text: transcript.0, lines: transcript.1 };
+    let new_transcript = Transcript { id: transcript_id, language: String::from("english"), text: transcript.0, lines: transcript.1, words: transcript.2 };
     let insert = db.collection::<Transcript>("transcripts").insert_one(&new_transcript, None).await?;
     let _update = update_record(db, "card", card_id, doc! {
         "$set": {

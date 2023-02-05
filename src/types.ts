@@ -50,6 +50,13 @@ export interface Telling {
     recording: Recording;
 }
 
+interface TranscriptWord {
+    word: string;
+    startTime: number;
+    endTime: number;
+    confidence: number;
+}
+
 interface Line {
     startTime: number;
     endTime: number;
@@ -61,6 +68,7 @@ export interface Transcript {
     language: string;
     text: string;
     lines: Line[];
+    words?: TranscriptWord[];
 }
 
 export interface StoryDeck {

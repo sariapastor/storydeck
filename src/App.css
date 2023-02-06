@@ -1,43 +1,42 @@
 @font-face {
-  font-family: "oddly-calming";
+  font-family: 'oddly-calming';
   src: url('/fonts/OddlyCalming/Oddly\ Calming.ttf');
 }
 
 @font-face {
-  font-family: "lucky-skirt";
+  font-family: 'lucky-skirt';
   src: url('/fonts/LuckySkirt/Lucky\ Skirt.ttf');
 }
 
 @font-face {
-  font-family: "handy-organizer";
+  font-family: 'handy-organizer';
   src: url('/fonts/HandyOrganizer/Handy\ Organizer.ttf');
 }
 
 @font-face {
-  font-family: "scholarly-ambition";
+  font-family: 'scholarly-ambition';
   src: url('/fonts/ScholarlyAmbition/Scholarly\ Ambition.ttf');
 }
 
 :root {
-  font-size: calc(18px + .3vw);
+  font-size: calc(18px + 0.3vw);
   --titlebar-height: 45px;
   --titlebar-color: #db8642;
   --bg-color: #efa9a3;
   --card-color: #aad1ab;
-
 }
 
 body {
   background: var(--bg-color);
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
 }
 
-main {
-  display: flex;
+/* main { */
+/* display: flex;
   flex-flow: row wrap;
-  justify-content: space-around;
-}
+  justify-content: space-around; */
+/* } */
 
 .hidden {
   display: none;

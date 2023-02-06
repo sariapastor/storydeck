@@ -5,9 +5,9 @@ import { StoryDeckIcon } from "./StoryDeck";
 import { SingleCardDisplay } from "./SingleCardDisplay";
 import { ExpandedStoryDeck } from "./ExpandedStoryDeck";
 import { FullTranscriptView } from "./FullTranscriptView";
-import "./MainDisplay.css";
 import { ViewState } from '../../types';
 import { useDeck } from '../../context';
+import "./MainDisplay.scss";
 
 interface MainDisplayProps {
   currentView: ViewState;

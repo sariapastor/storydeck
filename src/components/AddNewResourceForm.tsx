@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
+import { invoke } from "@tauri-apps/api";
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { NewRecordingInfo } from "../types";
-import "./AddNewResourceForm.css";
+
+import { useDeck } from "../context";
+import { NewRecordingInfo, StoryDeck, Telling } from "../types";
+import "./AddNewResourceForm.scss";
 
 declare global{
   interface Window {
@@ -9,55 +12,57 @@ declare global{
   }
 }
 
-interface AddNewResourceFormProps {
-  addMethods: [(input: NewRecordingInfo) => void, (input: string) => void];
-  updating: [boolean, string];
-  hideForm: () => void;
-}
+export const AddNewResourceForm: React.FC = () => {
+  const { formState, hideForm, loadCardsAndDecks, setActive } = useDeck();
+  const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<NewRecordingInfo>();
+  
+  const isOpen = formState !== 'closed';
+  const resource = isOpen ? formState : undefined;
+  
+  const addNewCard = async ({ name, recordingFilePath: filePath }: NewRecordingInfo) => {
+    console.log("invoking create_story_card");
+    const newCard: Telling = JSON.parse(await invoke<string>("create_story_card", { name, filePath }));
+    loadCardsAndDecks({ newCard }).catch(console.log);
+    setActive("card", newCard._id);
+    if (filePath) {
+      console.log(`invoking create_transcript\nfilePath: ${filePath}, cardId: ${newCard._id}`);
+      await invoke("create_transcript", {
+        filePath,
+        cardId: newCard._id,
+      });
+      loadCardsAndDecks().catch(console.log);
+    }
+  };
 
-export const AddNewResourceForm: React.FC<AddNewResourceFormProps> = ({ addMethods, updating, hideForm }) => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<NewRecordingInfo>();
-  const [formFields, setFormFields] = useState<NewRecordingInfo>({
-    name: "",
-    recordingFilePath: "",
-  });
-
-  const [isUpdating, updateResource] = updating;
-  const [addNewCard, addNewDeck] = addMethods;
-
-  const onNameChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    setFormFields({ ...formFields, name: e.target.value });
+  const addNewDeck = async ( name: string ) => {
+    console.log("invoking create_story_deck");
+    const newDeck: StoryDeck = JSON.parse(await invoke<string>("create_story_deck", { name }));
+    newDeck.cards = [];
+    loadCardsAndDecks({ newDeck }).catch(console.log);
+    setActive("deck", newDeck._id);
   };
 
   const onSubmit: SubmitHandler<NewRecordingInfo> = (data) => {
-    switch (updateResource) {
-      case "Deck":
+    hideForm();
+    switch (resource) {
+      case "collection":
         addNewDeck(data.name);
         break;
-      case "Recording":
-      case "Planned Recording":
+      case "recording":
+      case "plan":
         addNewCard(data);
         break;
       default:
-        console.log(`resource name "${updateResource}" not recognized`);
+        console.log(`resource name ${resource ? `"${resource}" not recognized` : 'undefined'}`);
     }
-
-    setFormFields({
-      name: "",
-      recordingFilePath: "",
-    });
   };
 
   const cancelAdd = () => {
-    setFormFields({
-      name: "",
-      recordingFilePath: "",
-    });
+    reset();
     hideForm();
   };
 
   const createDialog = () => {
-    // const input = document.getElementById("filePath");
     window.__TAURI__.dialog
       .open({
         multiple: false,
@@ -66,52 +71,57 @@ export const AddNewResourceForm: React.FC<AddNewResourceFormProps> = ({ addMetho
       })
       .then((path: string) => {
         if (path) {
-          setFormFields({ ...formFields, recordingFilePath: path });
-          console.log("added to formFields: ", path);
+          setValue("recordingFilePath", path, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+          console.log("set field value: ", path);
         }
       })
       .catch(console.log);
   };
 
-  const resourceDisplayName =
-    updateResource === "Deck" ? "Collection" : "Recording";
+  const resourceDisplayName = resource ? resource[0].toUpperCase() + resource.substring(1) : '';
 
   return (
-    <section className={`${isUpdating ? "active-form" : "hidden-form"}`}>
-      <section className="form-container">
-        <button className="close" onClick={cancelAdd}>
-          ✖
-        </button>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* <div className="fields"> */}
-          <div className="name-field">
-            <label htmlFor="name">
-              Name for new {resourceDisplayName.toLowerCase()}:
-            </label>
-            {/* <br /> */}
-            <input
-              // name="name"
-              {...register("name")}
-              // value={formFields.name}
-              // onChange={onNameChange}
-
-            />
-          </div>
-          <div
-            className={`${
-              updateResource === "Recording" ? "active-field" : "hidden-field"
-            }`}
-          >
-            <input type="file" {...register("recordingFilePath")} />
-            <button onClick={createDialog}>Choose File</button>
-            <div className="filename-display">
-              {/* {formFields.recordingFilePath.split("/").pop()} */}
-              {watch("recordingFilePath")}
+    <div className={`${isOpen ? "active-form" : "hidden"}`}>
+      <div className="form-container">
+        <div className="form-header">
+          <h2>{`Add New ${resourceDisplayName}`}</h2>
+        </div>
+        <form id="addForm" onSubmit={handleSubmit(onSubmit)}>
+          <div className={`field name-field ${errors.name ? 'has-error' : ''}`}>
+            <div className="input-group">
+              <label htmlFor="name">
+                Name for new {resource}:
+              </label>
+              <input className="text-input" {...register("name", { required: 'Name is required.' })} />
+            </div>
+            <div className="field-errors">
+              {errors.name?.message}
             </div>
           </div>
-          <input type="submit" value={`Add New ${updateResource}`} />
+          <div
+            className={`field file-field ${
+              resource === "recording" ? "active-field" : "hidden"
+            }`} 
+          >
+            <div className="input-group">
+              <input className="hidden" {...register("recordingFilePath", { required: { value: resource === "recording", message: "File path is required." } })} />
+              <button onClick={createDialog}>Choose File</button>
+              <div className="filename-display">
+                {watch("recordingFilePath").split('/').pop()}
+              </div>
+            </div>
+            <div className="field-errors">
+              {errors.recordingFilePath?.message}
+            </div>
+          </div>
         </form>
-      </section>
-    </section>
+        <div className="form-footer">
+          <button onClick={cancelAdd}>Cancel</button>
+          <button type="submit" form="addForm" disabled={!!(errors.name || errors.recordingFilePath)}>
+            {`Add New ${resourceDisplayName}`}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };

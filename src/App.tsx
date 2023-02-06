@@ -27,7 +27,6 @@ const WrappedApp: React.FC = () => {
   return (
     <>
       <Header title="Story Deck" />
-      {/* <SideBar /> */}
       <AddNewResourceForm />
       <MainDisplay currentView={viewStack[position]} />
     </>

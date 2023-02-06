@@ -14,9 +14,11 @@
   padding-right: 3vw;
   border-right: 2px solid black;
 
-  input {
+  input,
+  textarea {
     border: none;
     background-color: var(--bg-color);
+    padding: 4px;
   }
 
   input:hover,
@@ -24,19 +26,19 @@
   input:focus,
   textarea:focus {
     border: 2px solid gray;
+    padding: 2px;
   }
 
   input.h2 {
     margin-top: 0vw;
-    font-size: large;
+    font-size: 1rem;
   }
 
   textarea {
-    border: none;
-    background-color: var(--bg-color);
-    min-width: 90%;
-    min-height: 33%;
+    width: 90%;
+    height: fit-content;
     font-style: italic;
+    resize: none;
   }
 }
 

@@ -1,8 +1,0 @@
-.collections-layout {
-    margin-top: 5vh;
-    width: 90vw;
-    display: flex;
-    flex-direction: row;
-    align-items: start;
-    justify-content: space-around;
-}

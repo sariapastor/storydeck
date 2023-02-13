@@ -1,16 +1,18 @@
 import React from 'react';
-import "./StoryCard.css";
-import { Telling } from '../../types';
 import { ObjectIdExtended } from 'bson';
+import { DbCollection } from 'src/context';
+import { Telling } from 'src/types';
+import "src/components/MainDisplay/ExpandedCollection/TellingIcon.css";
 
-interface StoryCardProps {
+
+interface TellingIconProps {
   card: Telling;
-  updateActive: (type: "deck" | "card" | "transcript", oid: ObjectIdExtended) => void;
+  updateActive: (type: DbCollection, oid: ObjectIdExtended) => void;
 }
 
-export const StoryCard: React.FC<StoryCardProps> = ({ card, updateActive }) => {
+export const TellingIcon: React.FC<TellingIconProps> = ({ card, updateActive }) => {
   const summary = card.description ? card.description : "SOme text";
-  const setToActive = () => updateActive("card", card._id);
+  const setToActive = () => updateActive("telling", card._id);
   const unflip = (e: any) => e.target.childNodes[0].classList.add("resetting"); //eslint-disable-line @typescript-eslint/no-explicit-any
   const resetDone: React.AnimationEventHandler<HTMLDivElement> = (e) => {
     if (e.animationName === "reversetapeflip") {

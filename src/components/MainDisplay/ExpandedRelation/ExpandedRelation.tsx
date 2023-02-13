@@ -5,16 +5,16 @@ import { useForm } from 'react-hook-form';
 
 import { MediaDisplay } from "./MediaDisplay";
 import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
-import { ErrorBoundary } from '../ErrorBounds';
+import { ErrorBoundary } from 'src/components/ErrorBounds';
 import { Deck, Telling, TranscriptStatus } from 'src/types';
 import { useDeck, useNavigation } from 'src/context';
-import "./SingleCardDisplay.scss";
+import "./ExpandedRelation.scss";
 
-export const SingleCardDisplay: React.FC = () => {
+export const ExpandedRelation: React.FC = () => {
   const { viewStack, position } = useNavigation();
-  const { cards, decks, transcript, loadCardsAndDecks, loadTranscript, setActive, updateResource } = useDeck();
+  const { relations, collections, transcript, loadRelations, loadTranscript, setActive, updateResource } = useDeck();
   
-  const card = cards.find(c => c._id.$oid === viewStack[position].activeResource!.$oid)!;
+  const card = relations.find(c => c._id.$oid === viewStack[position].activeResource!.$oid)!;
   const { register } = useForm<{cardName: string; cardDescription?: string;}>({ defaultValues: { cardName: card.name, cardDescription: card.description } });
   const [mediaTime, setMediaTime] = useState(0);
 
@@ -40,28 +40,28 @@ export const SingleCardDisplay: React.FC = () => {
   }, [card]);
   
   const newDeckFromCard = async (card: Telling) => {
-    const newDeck: Deck = JSON.parse(await invoke<string>("create_story_deck", { name: "untitled collection" }));
-    newDeck.cards = [card];
+    const newCollection: Deck = JSON.parse(await invoke<string>("create_story_deck", { name: "untitled collection" }));
+    newCollection.cards = [card];
     const updatedCard = { ...card };
-    updatedCard.decks.push(newDeck._id);
-    loadCardsAndDecks({newDeck});
-    setActive("deck", newDeck._id);
-    await updateResource("card", updatedCard._id, { decks: updatedCard.decks });
-    loadCardsAndDecks().catch(console.log);
+    updatedCard.decks.push(newCollection._id);
+    loadRelations({newCollection});
+    setActive("deck", newCollection._id);
+    await updateResource("telling", updatedCard._id, { decks: updatedCard.decks });
+    loadRelations().catch(console.log);
   };
 
   const updateCard = (e: SyntheticEvent) => { 
     const attribute = (e.target as HTMLElement).id as "name" | "description" | "notes";
     const change: { [key: string]: string | undefined } = {};
     change[attribute] = (e.target as HTMLInputElement).value;
-    if (change[attribute] !== card[attribute]) { updateResource("card", card._id, change); }
+    if (change[attribute] !== card[attribute]) { updateResource("telling", card._id, change); }
   };
 
   const updateRelatedDecks = (oid: ObjectIdExtended) => {
     document.getElementById("deckPicker")!.classList.add("hidden");
     const updatedDeckList = [ ...card.decks, oid ];
     const change = { decks: updatedDeckList };
-    updateResource("card", card._id, change);
+    updateResource("telling", card._id, change);
   };
 
   const showDeckPicker = () => {
@@ -78,7 +78,7 @@ export const SingleCardDisplay: React.FC = () => {
       </ErrorBoundary>
       <section className="expanded-card-summary">
         <div id="deckPicker" className="deck-picker hidden">
-          {decks
+          {collections
             .filter((d) => !card.decks.some((cd) => cd.$oid === d._id.$oid))
             .map((d, index) => (
               <div key={index} onClick={() => updateRelatedDecks(d._id)}>{d.name}</div>
@@ -107,7 +107,7 @@ export const SingleCardDisplay: React.FC = () => {
                 key={index}
                 onClick={() => setActive("deck", deck)}
               >
-                {decks.find((d) => d._id.$oid === deck.$oid)!.name}
+                {collections.find((d) => d._id.$oid === deck.$oid)!.name}
               </li>
             ))}
             <li onClick={showDeckPicker}>+ Add to another</li>

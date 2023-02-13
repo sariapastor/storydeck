@@ -13,44 +13,44 @@ declare global{
 }
 
 export const AddNewResourceForm: React.FC = () => {
-  const { formState, hideForm, loadCardsAndDecks, setActive } = useDeck();
+  const { formState, hideForm, loadRelations, setActive } = useDeck();
   const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<NewRecordingInfo>();
   
   const isOpen = formState !== 'closed';
   const resource = isOpen ? formState : undefined;
   
-  const addNewCard = async ({ name, recordingFilePath: filePath }: NewRecordingInfo) => {
+  const addNewRelation = async ({ name, recordingFilePath: filePath }: NewRecordingInfo) => {
     console.log("invoking create_story_card");
-    const newCard: Telling = JSON.parse(await invoke<string>("create_story_card", { name, filePath }));
-    loadCardsAndDecks({ newCard }).catch(console.log);
-    setActive("card", newCard._id);
+    const newRelation: Telling = JSON.parse(await invoke<string>("create_story_card", { name, filePath }));
+    loadRelations({ newRelation }).catch(console.log);
+    setActive("card", newRelation._id);
     if (filePath) {
-      console.log(`invoking create_transcript\nfilePath: ${filePath}, cardId: ${newCard._id}`);
+      console.log(`invoking create_transcript\nfilePath: ${filePath}, cardId: ${newRelation._id}`);
       await invoke("create_transcript", {
         filePath,
-        cardId: newCard._id,
+        cardId: newRelation._id,
       });
-      loadCardsAndDecks().catch(console.log);
+      loadRelations().catch(console.log);
     }
   };
 
-  const addNewDeck = async ( name: string ) => {
+  const addNewCollection = async ( name: string ) => {
     console.log("invoking create_story_deck");
-    const newDeck: Deck = JSON.parse(await invoke<string>("create_story_deck", { name }));
-    newDeck.cards = [];
-    loadCardsAndDecks({ newDeck }).catch(console.log);
-    setActive("deck", newDeck._id);
+    const newCollection: Deck = JSON.parse(await invoke<string>("create_story_deck", { name }));
+    newCollection.cards = [];
+    loadRelations({ newCollection }).catch(console.log);
+    setActive("deck", newCollection._id);
   };
 
   const onSubmit: SubmitHandler<NewRecordingInfo> = (data) => {
     hideForm();
     switch (resource) {
       case "collection":
-        addNewDeck(data.name);
+        addNewCollection(data.name);
         break;
-      case "recording":
-      case "plan":
-        addNewCard(data);
+      case "relation":
+      case "outline":
+        addNewRelation(data);
         break;
       default:
         console.log(`resource name ${resource ? `"${resource}" not recognized` : 'undefined'}`);

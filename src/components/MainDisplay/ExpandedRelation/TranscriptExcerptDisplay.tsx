@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./TranscriptExcerptDisplay.css";
-import { useDeck } from "../../context";
+import { useDeck } from "src/context";
 
 interface TranscriptExcerptDisplayProps {
   mediaTime: number;

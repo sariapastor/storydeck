@@ -1,13 +1,13 @@
 import React from 'react';
-import { StoryDeck } from '../../types';
-import "./StoryDeck.css";
-import { useDeck } from '../../context';
+import { Deck } from 'src/types';
+import "./DeckIcon.css";
+import { useDeck } from 'src/context';
 
-interface StoryDeckIconProps {
-  deck: StoryDeck;
+interface DeckIconProps {
+  deck: Deck;
 }
 
-export const StoryDeckIcon: React.FC<StoryDeckIconProps> = ({ deck }) => {
+export const DeckIcon: React.FC<DeckIconProps> = ({ deck }) => {
   const { setActive } = useDeck();
   const summary = deck.description ? deck.description : "";
   return (

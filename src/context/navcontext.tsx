@@ -1,6 +1,6 @@
 import React, {createContext, PropsWithChildren, useContext, useReducer} from 'react';
 
-import { ViewState } from '../types';
+import { ViewState } from 'src/types';
 
 interface ViewStack {
   viewStack: ViewState[];
@@ -59,8 +59,8 @@ export const useNavigation = (): NavigationContextType => {
   return context;
 };
 
-export const NavigationContextProvider: React.FC<PropsWithChildren<ViewState>> = ({ children, ...initialView }) => {
-  const [state, dispatch] = useReducer(navigationReducer, { viewStack: [initialView], position: 0 });
+export const NavigationContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  const [state, dispatch] = useReducer(navigationReducer, { viewStack: [{view: "loading"}], position: 0 });
   const dispatches: Dispatches = {
     goBack: () => dispatch({ type: 'goBack' }),
     goForward: () => dispatch({ type: 'goForward' }),

@@ -84,8 +84,8 @@ export interface Deck {
 export interface ViewState {
     view: "loading" | "recording" | "collection" | "collections-overview" | "transcript" ;
     activeResource?: ObjectIdExtended;
-    // activeCard?: ObjectIdExtended;
-    // activeTranscript?: ObjectIdExtended;
 }
+
+export type FormType = 'collection' | 'relation' | 'outline';
 
 export type DbRecord = Telling | Transcript | Deck | Person | Tag;

@@ -1,17 +1,17 @@
 import React, { SyntheticEvent } from 'react';
 import { useForm } from 'react-hook-form';
-import { StoryCard } from "./StoryCard";
-import { useDeck, useNavigation } from '../../context';
-import "./ExpandedStoryDeck.scss";
+import { useDeck, useNavigation } from 'src/context';
+import { TellingIcon } from "src/components/MainDisplay/ExpandedCollection/TellingIcon";
+import "src/components/MainDisplay/ExpandedCollection/ExpandedCollection.scss";
 
-export const ExpandedStoryDeck: React.FC = () => {
-  const { decks, setActive, updateResource } = useDeck();
+export const ExpandedCollection: React.FC = () => {
+  const { collections, setActive, updateResource } = useDeck();
   const { viewStack, position } = useNavigation();
-  const deck = decks.find(d => d._id.$oid === viewStack[position].activeResource?.$oid)!
+  const deck = collections.find(d => d._id.$oid === viewStack[position].activeResource?.$oid)!
   const { register } = useForm<{deckName: string; deckDescription?: string; deckNotes?: string;}>({ defaultValues: {deckName: deck.name, deckDescription: deck.description, deckNotes: deck.notes}});
 
   const cardComponents = deck.cards.map((card, index) => (
-    <StoryCard key={index} card={card} updateActive={setActive} />
+    <TellingIcon key={index} card={card} updateActive={setActive} />
   ));
 
   const updateDeck = (e: SyntheticEvent) => { 

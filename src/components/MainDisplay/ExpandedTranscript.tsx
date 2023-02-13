@@ -2,16 +2,16 @@ import React, { SyntheticEvent } from "react";
 import { invoke } from "@tauri-apps/api";
 import { useForm } from "react-hook-form";
 
-import { useDeck, useNavigation } from "../../context";
-import "./FullTranscriptView.scss";
+import { useDeck, useNavigation } from "src/context";
+import "./ExpandedTranscript.scss";
 
-export const FullTranscriptView: React.FC = () => {
-  const { cards, transcript, loadTranscript, updateResource } = useDeck();
+export const ExpandedTranscript: React.FC = () => {
+  const { relations, transcript, loadTranscript, updateResource } = useDeck();
   const { viewStack, position } = useNavigation();
   
   if (!transcript) { loadTranscript(viewStack[position].activeResource!) }
   
-  const card = cards.find(c => c._id === transcript?.card_id);
+  const card = relations.find(c => c._id === transcript?.card_id);
   const { register } = useForm<{recordingFile: string; recordingName: string;}>({defaultValues: { recordingFile: card?.recording.filename, recordingName: card?.recording.name }});
 
   const updateRecording = async (e: SyntheticEvent) => {
@@ -26,12 +26,12 @@ export const FullTranscriptView: React.FC = () => {
           recordingId: card!.recording._id,
           filename: change["recording.filename"],
         });
-        updateResource("card", card!._id, change);
+        updateResource("telling", card!._id, change);
       } catch (e: unknown) {
         console.error(e);
       }
     } else {
-      updateResource("card", card!._id, change);
+      updateResource("telling", card!._id, change);
     }
   };
   

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactWaves from "@dschoon/react-waves";
 import { documentDir, join } from "@tauri-apps/api/path";
-import { Recording } from '../../types';
+import { Recording } from 'src/types';
 import "./MediaDisplay.css";
 
 

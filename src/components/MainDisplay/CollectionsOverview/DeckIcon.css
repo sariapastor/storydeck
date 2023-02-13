@@ -1,15 +1,10 @@
 .collection-container {
   padding: 10px;
-  /* border-radius: 10px; */
   transition: 0.2s all;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
-/* .collection-container:hover {
-    box-shadow: inset 0px 0px 6px;
-} */
 
 .collection-title {
   font-family: 'oddly-calming';
@@ -35,8 +30,6 @@
 }
 
 .cassette-rack {
-  /* height: 22.5vw;
-    width: 25vw; */
   height: 288px;
   width: 320px;
   background: var(--rack-frame);
@@ -58,16 +51,12 @@
 
 .rack-background {
   position: absolute;
-  /* height: 20vw;
-    width: 18.75vw; */
   height: 256px;
   width: 240px;
   background: var(--rack-background);
 }
 
 .tape-slot {
-  /* height: 3.75vw;
-    width: 23.75vw; */
   height: 48px;
   width: 304px;
   display: flex;
@@ -78,8 +67,6 @@
 }
 
 .tape-case {
-  /* height: 3.75vw;
-    width: 23.75vw; */
   height: 48px;
   width: 304px;
   border: 1px solid grey;
@@ -92,8 +79,6 @@
 }
 
 .tape-label {
-  /* width: 22.5vw;
-    height: 2.6vw; */
   height: 33px;
   width: 284px;
   background: linear-gradient(
@@ -113,8 +98,6 @@
 }
 
 .empty-slot {
-  /* width: 100%;
-    height: 100%; */
   height: 48px;
   width: 304px;
   background: var(--rack-background);

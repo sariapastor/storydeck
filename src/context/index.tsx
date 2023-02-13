@@ -7,7 +7,7 @@ export * from './deckcontext';
 
 export const AppContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return (
-        <NavigationContextProvider view='loading'>
+        <NavigationContextProvider>
             <DeckContextProvider>
                 {children}
             </DeckContextProvider>

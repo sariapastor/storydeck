@@ -1,38 +1,38 @@
 import React, {createContext, PropsWithChildren, useContext, useEffect, useReducer} from 'react';
-import { ObjectIdExtended } from 'bson';
 import { invoke } from '@tauri-apps/api';
-
-import { DbRecord, Deck, Telling, Transcript, ViewState } from 'src/types';
+import { ObjectIdExtended } from 'bson';
+import { toast } from 'react-toastify';
+import { DbRecord, Deck, FormType, Telling, Transcript, ViewState } from 'src/types';
 import { useNavigation } from 'src/context';
 
+
 interface ResourceState {
-  decks: Deck[];
-  cards: Telling[];
+  collections: Deck[];
+  relations: Telling[];
   transcript?: Transcript;
 }
 
-type FormModalState = "recording" | "plan" | "collection" | "closed";
+type FormModalState = FormType | 'closed';
 
-export type FormType = Exclude<FormModalState, "closed">;
+type DeckState = ResourceState & { formState: FormModalState };
 
-type AppState = ResourceState & { formState: FormModalState };
-
-type ResourceAction = { type: 'loadCardsAndDecks'; payload: [Telling[], Deck[]] }
+type ResourceAction = 
+  | { type: 'loadRelations'; payload: [Telling[], Deck[]] }
   | { type: 'loadTranscript', payload: Transcript };
 
 type FormAction = { type: 'setForm', payload: FormModalState };
 
-type AppAction = ResourceAction | FormAction;
+type DeckAction = ResourceAction | FormAction;
 
-type DbCollection = 'card' | 'deck' | 'transcript';
+export type DbCollection = 'deck' | 'telling' | 'transcript';
 
 interface LocalUpdate {
-  newCard?: Telling;
-  newDeck?: Deck;  
+  newRelation?: Telling;
+  newCollection?: Deck;  
 }
 
 interface Dispatches {
-  loadCardsAndDecks: (update?: LocalUpdate) => Promise<void>;
+  loadRelations: (update?: LocalUpdate) => Promise<void>;
   loadTranscript: (oid: ObjectIdExtended) => Promise<void>;
   updateResource: (resourceType: DbCollection, id: ObjectIdExtended, update: Partial<DbRecord>) => Promise<void>;
   setActive: (resourceType: DbCollection, id: ObjectIdExtended) => void;
@@ -40,20 +40,21 @@ interface Dispatches {
   hideForm: () => void;
 }
 
-export type DeckContextType = AppState & Dispatches;
+export type DeckContextType = DeckState & Dispatches;
 
-const DeckReducer = (state: AppState, action: AppAction): AppState => {
+
+const DeckReducer = (state: DeckState, action: DeckAction): DeckState => {
   switch (action.type) {
     case 'loadTranscript':
       return {
         ...state,
         transcript: action.payload
       };
-    case 'loadCardsAndDecks':
+    case 'loadRelations':
       return {
         ...state,
-        cards: action.payload[0],
-        decks: action.payload[1]
+        relations: action.payload[0],
+        collections: action.payload[1]
       };
     case 'setForm':
       return {
@@ -63,11 +64,12 @@ const DeckReducer = (state: AppState, action: AppAction): AppState => {
   }
 };
 
-// Database query/update methods
 
-const getCardsAndDecks = async (): Promise<[Telling[], Deck[]]> => {
-    let cards: Telling[] = [];
-    let decks: Deck[] = [];
+//--- Database query and update methods
+
+const getRelations = async (): Promise<[Telling[], Deck[]]> => {
+    let relations: Telling[] = [];
+    let collections: Deck[] = [];
     try {
       const response = await invoke<string>("query_cards_and_decks", {});
       const [dbCards, dbDecks]: [Telling[], Omit<Deck, "cards">[]] = JSON.parse(response);
@@ -77,19 +79,22 @@ const getCardsAndDecks = async (): Promise<[Telling[], Deck[]]> => {
         );
         return { ...deck, cards: deckCards };
       });
-      cards = dbCards;
-      decks = processedDecks;
+      relations = dbCards;
+      collections = processedDecks;
     } catch (e) {
-      console.log(e);
+      if (e instanceof SyntaxError) {
+        console.error("Format of response was not valid:", e);
+      }
+      toast.error("Failed to update from database, try again.")
     }
-    return [cards, decks];
+    return [relations, collections];
 };
 
 const getTranscript = async (oid: ObjectIdExtended): Promise<Transcript> => {
   return JSON.parse(await invoke<string>("query_transcripts", { filter: { _id: oid} }))[0];
 };
 
-const updateRecord = async (recordType: "card" | "deck" | "transcript", id: ObjectIdExtended, update: Partial<DbRecord>): Promise<boolean> => {
+const updateRecord = async (recordType: "deck" | "telling" | "transcript", id: ObjectIdExtended, update: Partial<DbRecord>): Promise<boolean> => {
   console.log(recordType, update);
   try {
     await invoke("update_record", { recordType, id, update });
@@ -98,6 +103,8 @@ const updateRecord = async (recordType: "card" | "deck" | "transcript", id: Obje
   }
   return true;
 };
+
+//--------------------------------
 
 const DeckContext = createContext<DeckContextType | null>(null);
 
@@ -109,35 +116,35 @@ export const useDeck = (): DeckContextType => {
   return context;
 };
 
-const initialAppState = { cards: [], decks: [], formState: 'closed' as FormModalState };
+const initialDeckState = { relations: [], collections: [], formState: 'closed' as FormModalState };
 
 export const DeckContextProvider: React.FC<PropsWithChildren> = ({ children,  }) => {
   const { pushView, initializeViewStack } = useNavigation();
-  const [state, dispatch] = useReducer(DeckReducer, initialAppState);
+  const [state, dispatch] = useReducer(DeckReducer, initialDeckState);
 
   const dispatches: Dispatches = {
-    loadCardsAndDecks: async (update?: LocalUpdate) => {
+    loadRelations: async (update?: LocalUpdate) => {
         if (update) {
-            const cards = update.newCard ? [ ...state.cards, update.newCard ] : state.cards;
-            const decks = update.newDeck ? [ ...state.decks, update.newDeck ] : state.decks; 
-            dispatch({ type: 'loadCardsAndDecks', payload: [cards, decks] });
+            const relations = update.newRelation ? [ ...state.relations, update.newRelation ] : state.relations;
+            const collections = update.newCollection ? [ ...state.collections, update.newCollection ] : state.collections; 
+            dispatch({ type: 'loadRelations', payload: [relations, collections] });
         }
-        dispatch({ type: 'loadCardsAndDecks', payload: await getCardsAndDecks() });
+        dispatch({ type: 'loadRelations', payload: await getRelations() });
     },
     loadTranscript: async (oid: ObjectIdExtended) => dispatch({ type: 'loadTranscript', payload: await getTranscript(oid) }),
     updateResource: async (resourceType: DbCollection, id: ObjectIdExtended, update: Partial<DbRecord>) => {
         if (await updateRecord(resourceType, id, update)) {
-            dispatch({ type: 'loadCardsAndDecks', payload: await getCardsAndDecks() })
+            dispatch({ type: 'loadRelations', payload: await getRelations() })
         }
     },
     setActive: (resourceType: DbCollection, id: ObjectIdExtended) => {
         let newView: ViewState;
         switch (resourceType) {
-            case 'card':
-                newView = { view: 'recording', activeResource: id};
-                break;
             case 'deck':
-                newView = { view: 'collection', activeResource: id};
+              newView = { view: 'collection', activeResource: id};
+              break;
+            case 'telling':
+                newView = { view: 'recording', activeResource: id};
                 break;
             case 'transcript':
                 newView = { view: 'transcript', activeResource: id};
@@ -150,7 +157,7 @@ export const DeckContextProvider: React.FC<PropsWithChildren> = ({ children,  })
   };
 
   useEffect(() => {
-    dispatches.loadCardsAndDecks().then(() => initializeViewStack());
+    dispatches.loadRelations().then(() => initializeViewStack());
   }, []);
 
   return (

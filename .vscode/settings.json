@@ -6,6 +6,9 @@
   "editor.formatOnSaveMode": "file",
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   } // required to format on save
   //"files.autoSave": "onFocusChange" // optional but recommended
 }

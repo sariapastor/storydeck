@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api";
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { useDeck } from "../context";
-import { NewRecordingInfo, StoryDeck, Telling } from "../types";
+import { NewRecordingInfo, Deck, Telling } from "../types";
 import "./AddNewResourceForm.scss";
 
 declare global{
@@ -36,7 +36,7 @@ export const AddNewResourceForm: React.FC = () => {
 
   const addNewDeck = async ( name: string ) => {
     console.log("invoking create_story_deck");
-    const newDeck: StoryDeck = JSON.parse(await invoke<string>("create_story_deck", { name }));
+    const newDeck: Deck = JSON.parse(await invoke<string>("create_story_deck", { name }));
     newDeck.cards = [];
     loadCardsAndDecks({ newDeck }).catch(console.log);
     setActive("deck", newDeck._id);
@@ -107,7 +107,7 @@ export const AddNewResourceForm: React.FC = () => {
               <input className="hidden" {...register("recordingFilePath", { required: { value: resource === "recording", message: "File path is required." } })} />
               <button onClick={createDialog}>Choose File</button>
               <div className="filename-display">
-                {watch("recordingFilePath").split('/').pop()}
+                {watch("recordingFilePath")?.split('/').pop()}
               </div>
             </div>
             <div className="field-errors">

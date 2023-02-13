@@ -18,13 +18,12 @@ module.exports = {
     'import/resolver': {
       typescript: true,
       node: {
-        paths: ['src'],
-        extensions: ['.js', '.jsx'],
+        paths: ['node_modules', 'src'],
+        extensions: ['.js', '.jsx', '.d.ts', '.ts', '.tsx'],
       },
     },
   },
   rules: {
-    // Add your own rules here to override ones from the extended configs.
     "import/no-unresolved": "error",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-non-null-assertion": "off"

@@ -7,8 +7,8 @@ import "./ExpandedStoryDeck.scss";
 export const ExpandedStoryDeck: React.FC = () => {
   const { decks, setActive, updateResource } = useDeck();
   const { viewStack, position } = useNavigation();
-  const deck = decks.find(d => d._id.$oid === viewStack[position].activeDeck?.$oid)!
-  const { register, watch } = useForm<{deckName: string; deckDescription?: string; deckNotes?: string;}>({ defaultValues: {deckName: deck.name, deckDescription: deck.description, deckNotes: deck.notes}});
+  const deck = decks.find(d => d._id.$oid === viewStack[position].activeResource?.$oid)!
+  const { register } = useForm<{deckName: string; deckDescription?: string; deckNotes?: string;}>({ defaultValues: {deckName: deck.name, deckDescription: deck.description, deckNotes: deck.notes}});
 
   const cardComponents = deck.cards.map((card, index) => (
     <StoryCard key={index} card={card} updateActive={setActive} />
@@ -33,9 +33,7 @@ export const ExpandedStoryDeck: React.FC = () => {
           id="description"
           {...register("deckDescription", { onBlur: updateDeck })}
           placeholder="Add description"
-        >
-          {watch("deckDescription")}
-        </textarea>
+        />
       </section>
       <div className="deck-cards-layout">{cardComponents}</div>
     </div>

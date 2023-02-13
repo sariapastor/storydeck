@@ -1,26 +1,26 @@
 import React, {createContext, PropsWithChildren, useContext, useEffect, useReducer} from 'react';
 import { ObjectIdExtended } from 'bson';
-
-import { DbRecord, StoryDeck, Telling, Transcript, ViewState } from '../types';
 import { invoke } from '@tauri-apps/api';
-import { useNavigation } from './navcontext';
+
+import { DbRecord, Deck, Telling, Transcript, ViewState } from 'src/types';
+import { useNavigation } from 'src/context';
 
 interface ResourceState {
-  decks: StoryDeck[];
+  decks: Deck[];
   cards: Telling[];
   transcript?: Transcript;
 }
 
-type FormState = "recording" | "plan" | "collection" | "closed";
+type FormModalState = "recording" | "plan" | "collection" | "closed";
 
-export type FormType = Exclude<FormState, "closed">;
+export type FormType = Exclude<FormModalState, "closed">;
 
-type AppState = ResourceState & { formState: FormState };
+type AppState = ResourceState & { formState: FormModalState };
 
-type ResourceAction = { type: 'loadCardsAndDecks'; payload: [Telling[], StoryDeck[]] }
+type ResourceAction = { type: 'loadCardsAndDecks'; payload: [Telling[], Deck[]] }
   | { type: 'loadTranscript', payload: Transcript };
 
-type FormAction = { type: 'setForm', payload: FormState };
+type FormAction = { type: 'setForm', payload: FormModalState };
 
 type AppAction = ResourceAction | FormAction;
 
@@ -28,7 +28,7 @@ type DbCollection = 'card' | 'deck' | 'transcript';
 
 interface LocalUpdate {
   newCard?: Telling;
-  newDeck?: StoryDeck;  
+  newDeck?: Deck;  
 }
 
 interface Dispatches {
@@ -40,7 +40,7 @@ interface Dispatches {
   hideForm: () => void;
 }
 
-export type DeckContextType = Omit<AppState, 'viewState'> & Dispatches;
+export type DeckContextType = AppState & Dispatches;
 
 const DeckReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
@@ -65,12 +65,12 @@ const DeckReducer = (state: AppState, action: AppAction): AppState => {
 
 // Database query/update methods
 
-const getCardsAndDecks = async (): Promise<[Telling[], StoryDeck[]]> => {
+const getCardsAndDecks = async (): Promise<[Telling[], Deck[]]> => {
     let cards: Telling[] = [];
-    let decks: StoryDeck[] = [];
+    let decks: Deck[] = [];
     try {
       const response = await invoke<string>("query_cards_and_decks", {});
-      const [dbCards, dbDecks]: [Telling[], Omit<StoryDeck, "cards">[]] = JSON.parse(response);
+      const [dbCards, dbDecks]: [Telling[], Omit<Deck, "cards">[]] = JSON.parse(response);
       const processedDecks = dbDecks.map((deck) => {
         const deckCards = dbCards.filter((card) =>
           card.decks.map((oid) => oid.$oid).includes(deck._id.$oid)
@@ -109,10 +109,10 @@ export const useDeck = (): DeckContextType => {
   return context;
 };
 
-const initialAppState = { cards: [], decks: [], formState: 'closed' as FormState };
+const initialAppState = { cards: [], decks: [], formState: 'closed' as FormModalState };
 
 export const DeckContextProvider: React.FC<PropsWithChildren> = ({ children,  }) => {
-  const { viewStack, position, addView, initializeViewStack } = useNavigation();
+  const { pushView, initializeViewStack } = useNavigation();
   const [state, dispatch] = useReducer(DeckReducer, initialAppState);
 
   const dispatches: Dispatches = {
@@ -134,16 +134,16 @@ export const DeckContextProvider: React.FC<PropsWithChildren> = ({ children,  })
         let newView: ViewState;
         switch (resourceType) {
             case 'card':
-                newView = {...viewStack[position], view: 'single-card', activeCard: id};
+                newView = { view: 'recording', activeResource: id};
                 break;
             case 'deck':
-                newView = {...viewStack[position], view: 'single-deck', activeDeck: id};
+                newView = { view: 'collection', activeResource: id};
                 break;
             case 'transcript':
-                newView = {...viewStack[position], view: 'full-transcript', activeTranscript: id};
+                newView = { view: 'transcript', activeResource: id};
                 break;
         }
-        addView(newView);
+        pushView(newView);
     },
     showForm: (formType: FormType) => dispatch({ type: 'setForm', payload: formType }),
     hideForm: () => dispatch({ type: 'setForm', payload: 'closed'})
@@ -154,7 +154,7 @@ export const DeckContextProvider: React.FC<PropsWithChildren> = ({ children,  })
   }, []);
 
   return (
-    <DeckContext.Provider value={{ cards: state.cards, decks: state.decks, transcript: state.transcript, formState: state.formState, ...dispatches }}>
+    <DeckContext.Provider value={{ ...state, ...dispatches }}>
       {children}
     </DeckContext.Provider>
   );

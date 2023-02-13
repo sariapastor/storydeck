@@ -34,16 +34,16 @@ export const MainDisplay: React.FC<MainDisplayProps> = ({ currentView }) => {
     case "loading":
       DisplayComponent = withErrorBoundary(LoadingAnimation);
       break;
-    case "single-deck":
+    case "collection":
       DisplayComponent = withErrorBoundary(ExpandedStoryDeck);
       break;
-    case "single-card":
+    case "recording":
       DisplayComponent = withErrorBoundary(SingleCardDisplay);
       break;
-    case "full-transcript":
+    case "transcript":
       DisplayComponent = withErrorBoundary(FullTranscriptView);
       break;
-    case "decks-overview":
+    case "collections-overview":
     default:
       DisplayComponent = withErrorBoundary(AllDecksView);
   }

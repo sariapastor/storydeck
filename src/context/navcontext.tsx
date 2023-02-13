@@ -16,7 +16,7 @@ type NavigationAction =
 interface Dispatches {
   goBack: () => void;
   goForward: () => void;
-  addView: (newView: ViewState) => void;
+  pushView: (newView: ViewState) => void;
   initializeViewStack: () => void;
 }
 
@@ -43,7 +43,7 @@ const navigationReducer = (state: ViewStack, action: NavigationAction): ViewStac
       };
     case 'initialize':
       return {
-        viewStack: [ { view: "decks-overview" } ],
+        viewStack: [ { view: "collections-overview" } ],
         position: 0
       };
   }
@@ -64,7 +64,7 @@ export const NavigationContextProvider: React.FC<PropsWithChildren<ViewState>> =
   const dispatches: Dispatches = {
     goBack: () => dispatch({ type: 'goBack' }),
     goForward: () => dispatch({ type: 'goForward' }),
-    addView: (newView: ViewState) => dispatch({ type: 'add', payload: newView }),
+    pushView: (newView: ViewState) => dispatch({ type: 'add', payload: newView }),
     initializeViewStack: () => dispatch({ type: 'initialize' })
   };
   return (

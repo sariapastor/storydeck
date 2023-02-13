@@ -12,9 +12,9 @@ interface Tag {
 }
 
 export enum TranscriptStatus {
-    Processing,
-    Complete,
-    Error
+    Processing = "Processing",
+    Complete = "Complete",
+    Error = "Error"
 }
 
 export interface NewRecordingInfo {
@@ -69,9 +69,10 @@ export interface Transcript {
     text: string;
     lines: Line[];
     words?: TranscriptWord[];
+    card_id: ObjectIdExtended; 
 }
 
-export interface StoryDeck {
+export interface Deck {
     _id: ObjectIdExtended;
     name: string;
     description?: string;
@@ -81,11 +82,10 @@ export interface StoryDeck {
 }
 
 export interface ViewState {
-    view: "loading" | "single-card" | "single-deck" | "decks-overview" | "full-transcript" | "form";
-    activeDeck?: ObjectIdExtended;
-    activeCard?: ObjectIdExtended;
-    activeTranscript?: ObjectIdExtended;
-    activeForm?: "recording" | "collection";
+    view: "loading" | "recording" | "collection" | "collections-overview" | "transcript" ;
+    activeResource?: ObjectIdExtended;
+    // activeCard?: ObjectIdExtended;
+    // activeTranscript?: ObjectIdExtended;
 }
 
-export type DbRecord = Telling | StoryDeck | Transcript | Person | Tag;
+export type DbRecord = Telling | Transcript | Deck | Person | Tag;

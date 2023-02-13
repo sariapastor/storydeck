@@ -6,17 +6,17 @@ import { useForm } from 'react-hook-form';
 import { MediaDisplay } from "./MediaDisplay";
 import { TranscriptExcerptDisplay } from "./TranscriptExcerptDisplay";
 import { ErrorBoundary } from '../ErrorBounds';
-import { StoryDeck, Telling, TranscriptStatus } from '../../types';
-import { useDeck, useNavigation } from '../../context';
+import { Deck, Telling, TranscriptStatus } from 'src/types';
+import { useDeck, useNavigation } from 'src/context';
 import "./SingleCardDisplay.scss";
 
 export const SingleCardDisplay: React.FC = () => {
   const { viewStack, position } = useNavigation();
   const { cards, decks, transcript, loadCardsAndDecks, loadTranscript, setActive, updateResource } = useDeck();
-  const [mediaTime, setMediaTime] = useState(0);
   
-  const card = cards.find(c => c._id.$oid === viewStack[position].activeCard?.$oid)!;
-  const { register, watch } = useForm<{cardName: string; cardDescription?: string;}>({ defaultValues: { cardName: card.name, cardDescription: card.description } });
+  const card = cards.find(c => c._id.$oid === viewStack[position].activeResource!.$oid)!;
+  const { register } = useForm<{cardName: string; cardDescription?: string;}>({ defaultValues: { cardName: card.name, cardDescription: card.description } });
+  const [mediaTime, setMediaTime] = useState(0);
 
   let transcriptStatusMsg;
   useEffect(() => {
@@ -40,7 +40,7 @@ export const SingleCardDisplay: React.FC = () => {
   }, [card]);
   
   const newDeckFromCard = async (card: Telling) => {
-    const newDeck: StoryDeck = JSON.parse(await invoke<string>("create_story_deck", { name: "untitled collection" }));
+    const newDeck: Deck = JSON.parse(await invoke<string>("create_story_deck", { name: "untitled collection" }));
     newDeck.cards = [card];
     const updatedCard = { ...card };
     updatedCard.decks.push(newDeck._id);
@@ -96,9 +96,7 @@ export const SingleCardDisplay: React.FC = () => {
           <textarea
             id="description"
             { ...register("cardDescription", { onBlur: updateCard }) }
-          >
-            { watch("cardDescription") }
-          </textarea>
+          />
         </section>
         <section className="related">
           <h4>related collections</h4>

@@ -6,7 +6,7 @@ import { useDeck } from "../context";
 import { NewRecordingInfo, Deck, Telling } from "../types";
 import "./AddNewResourceForm.scss";
 
-declare global{
+declare global {
   interface Window {
     __TAURI__: any; //eslint-disable-line @typescript-eslint/no-explicit-any
   }
@@ -15,15 +15,15 @@ declare global{
 export const AddNewResourceForm: React.FC = () => {
   const { formState, hideForm, loadRelations, setActive } = useDeck();
   const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<NewRecordingInfo>();
-  
+
   const isOpen = formState !== 'closed';
   const resource = isOpen ? formState : undefined;
-  
+
   const addNewRelation = async ({ name, recordingFilePath: filePath }: NewRecordingInfo) => {
     console.log("invoking create_story_card");
     const newRelation: Telling = JSON.parse(await invoke<string>("create_story_card", { name, filePath }));
     loadRelations({ newRelation }).catch(console.log);
-    setActive("card", newRelation._id);
+    setActive("telling", newRelation._id);
     if (filePath) {
       console.log(`invoking create_transcript\nfilePath: ${filePath}, cardId: ${newRelation._id}`);
       await invoke("create_transcript", {
@@ -34,7 +34,7 @@ export const AddNewResourceForm: React.FC = () => {
     }
   };
 
-  const addNewCollection = async ( name: string ) => {
+  const addNewCollection = async (name: string) => {
     console.log("invoking create_story_deck");
     const newCollection: Deck = JSON.parse(await invoke<string>("create_story_deck", { name }));
     newCollection.cards = [];
@@ -99,12 +99,11 @@ export const AddNewResourceForm: React.FC = () => {
             </div>
           </div>
           <div
-            className={`field file-field ${
-              resource === "recording" ? "active-field" : "hidden"
-            }`} 
+            className={`field file-field ${resource === "relation" ? "active-field" : "hidden"
+              }`}
           >
             <div className="input-group">
-              <input className="hidden" {...register("recordingFilePath", { required: { value: resource === "recording", message: "File path is required." } })} />
+              <input className="hidden" {...register("recordingFilePath", { required: { value: resource === "relation", message: "File path is required." } })} />
               <button onClick={createDialog}>Choose File</button>
               <div className="filename-display">
                 {watch("recordingFilePath")?.split('/').pop()}

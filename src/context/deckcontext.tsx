@@ -7,7 +7,7 @@ import { DbRecord, Deck, FormType, Telling, Transcript, ViewState } from 'src/ty
 import { useNavigation } from 'src/context';
 
 
-export type DbCollection = 'deck' | 'telling' | 'transcript';
+//--- State, Action, Dispatch types
 
 interface ResourceState {
   collections: Deck[];
@@ -23,6 +23,8 @@ type DeckAction =
   | { type: 'loadRelations'; payload: [Telling[], Deck[]] }
   | { type: 'loadTranscript', payload: Transcript }
   | { type: 'setForm', payload: FormModalState };
+
+export type DbCollection = 'deck' | 'telling' | 'transcript';
 
 interface LocalUpdate {
   newRelation?: Telling;
@@ -41,6 +43,8 @@ interface Dispatches {
 
 export type DeckContextType = DeckState & Dispatches;
 
+
+//--- State reducer and database methods
 
 const deckReducer = (state: DeckState, action: DeckAction): DeckState => {
   switch (action.type) {
@@ -62,9 +66,6 @@ const deckReducer = (state: DeckState, action: DeckAction): DeckState => {
       }
   }
 };
-
-
-//--- Database query and update methods
 
 const getRelations = async (): Promise<[Telling[], Deck[]] | undefined> => {
   try {
@@ -116,7 +117,8 @@ const deleteRecord = async (recordType: "deck" | "telling" | "transcript", id: O
   }
 };
 
-//--------------------------------
+
+//--- Exported context hook and provider
 
 const DeckContext = createContext<DeckContextType | null>(null);
 
